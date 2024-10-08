@@ -3,7 +3,7 @@ To run virtual env:
 # windows
 cd Ducky/server/
 python3 -m venv venv
-venv\Scripts\activate
+venv\bin\activate
 
 # macOS/Linux
 python3 -m venv venv

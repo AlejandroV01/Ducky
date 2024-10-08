@@ -3,6 +3,7 @@
 ## Setting up the Virtual Environment
 
 ### Windows
+
 1. Navigate to the backend directory:
    ```bash
    cd Ducky/server/
@@ -21,6 +22,7 @@
    ```
 
 ### macOS/Linux
+
 1. Navigate to the backend directory:
    ```bash
    cd Ducky/server/
@@ -35,13 +37,25 @@
    ```
 
 ## Leaving the Virtual Environment
+
 To deactivate the virtual environment, type the following in your terminal:
+
 ```bash
 deactivate
 ```
 
 ## Installing Dependencies
+
 After activating the virtual environment, install all dependencies:
+
 ```bash
 pip install -r requirements.txt
+```
+
+## Starting the Server
+
+To active the server you may run the following command:
+
+```bash
+npm run server
 ```

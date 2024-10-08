@@ -1,0 +1,8 @@
+{
+  "name": "fastapi-server",
+  "version": "1.0.0",
+  "scripts": {
+    "server": ".\\venv\\Scripts\\activate && uvicorn main:app --reload",
+    "activate": ".\\venv\\Scripts\\activate"
+  }
+}

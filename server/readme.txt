@@ -1,17 +1,47 @@
-To run virtual env:
+# Ducky Project Backend
 
-# windows
-cd Ducky/server/
-python3 -m venv venv
-venv\bin\activate
+## Setting up the Virtual Environment
 
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
+### Windows
+1. Navigate to the backend directory:
+   ```bash
+   cd Ducky/server/
+   ```
+2. Create a virtual environment:
+   ```bash
+   python3 -m venv venv
+   ```
+   or
+   ```bash
+   python -m venv venv
+   ```
+3. Activate the virtual environment:
+   ```bash
+   venv\Scripts\activate
+   ```
 
-To leave virtual env:
-type "deactivate" in terminal
+### macOS/Linux
+1. Navigate to the backend directory:
+   ```bash
+   cd Ducky/server/
+   ```
+2. Create a virtual environment:
+   ```bash
+   python3 -m venv venv
+   ```
+3. Activate the virtual environment:
+   ```bash
+   source venv/bin/activate
+   ```
 
-To install all dependencies:
-cd Ducky/server/
+## Leaving the Virtual Environment
+To deactivate the virtual environment, type the following in your terminal:
+```bash
+deactivate
+```
+
+## Installing Dependencies
+After activating the virtual environment, install all dependencies:
+```bash
 pip install -r requirements.txt
+```

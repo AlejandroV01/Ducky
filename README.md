@@ -59,18 +59,14 @@ To run Ducky, you need to configure the environment variables.
 #### Frontend
 Create a `.env.local` file in the `/frontend` directory with the following:
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret
+N/A
 ```
 
 #### Backend
 Create a `.env` file in the `/backend` directory with the following:
 ```bash
-DATABASE_URL=your_supabase_database_url
-SUPABASE_BUCKET=your_supabase_storage_bucket_name
-SUPABASE_KEY=your_supabase_service_key
+SUPABASE_URL=your_supabase_database_url
+SUPABASE_KEY=your_supabase_storage_key
 ```
 
 ### 4. Run the Application

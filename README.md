@@ -1,4 +1,4 @@
-# 🦆 Ducky.pics
+# 🦆 Ducky
 
 Welcome to **Ducky**! 🖼️ A collaborative event photo-sharing platform designed for groups and communities to capture and share memories. Think of it as an album-first social experience, making it easy to create, share, and enjoy photo albums for every occasion. 📸
 

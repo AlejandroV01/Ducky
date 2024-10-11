@@ -8,7 +8,6 @@ const PasswordStrength = () => {
   const [progressValue, setProgressValue] = useState<number>(0);
 
   function containsSpecialChar(password: string): boolean {
-    // Define a regular expression for special characters
     const specialCharPattern = /[!@#$%^&*(),.?":{}|<>]/;
     return specialCharPattern.test(password);
   }
@@ -16,7 +15,7 @@ const PasswordStrength = () => {
     let strength = 0;
 
     if (password.length >= 6) strength += 33;
-    if (/[A-Z]/.test(password)) strength += 33;
+    if (/[0-9]/.test(password)) strength += 33;
     if (containsSpecialChar(password)) strength += 34;
     return strength;
   }
@@ -25,53 +24,73 @@ const PasswordStrength = () => {
     setPassword(value);
     setProgressValue(calculateStrength(value));
   };
+  function strengthLevel(strength: number): {
+    level: string;
+    textColor: string;
+  } {
+    if (strength < 33) {
+      return { level: "Weak", textColor: "text-red-500" };
+    } else if (strength < 66) {
+      return { level: "Moderate", textColor: "text-yellow-500" };
+    } else {
+      return { level: "Strong", textColor: "text-green-500" };
+    }
+  }
+  const { level, textColor } = strengthLevel(progressValue);
 
   return (
     <div>
-      <Progress color="red-500" value={progressValue} />
+      <Progress className="[&>*]:bg-[#8B6ED4]" value={progressValue} />
       <Input
         value={password}
         onChange={handleInputChange}
         placeholder="Enter Your Password"
       />
-      <h1>Your password must conatin</h1>
-      <div className="LargerThen6">
+      <h1 className={`md:font-bold ${textColor}`}>
+        Password Strength: {level}
+      </h1>
+      <h1 className="md:font-bold">Your password must conatin</h1>
+      <div className="flex">
         {password.length >= 6 ? (
           <Check size={20} className="text-green-500" />
         ) : (
-          <X size={20} className="text-grey-400" />
+          <X size={20} className="text-neutral-700" />
         )}
         <p
-          className={password.length >= 6 ? "text-green-500" : "text-grey-400"}
+          className={
+            password.length >= 6 ? "text-green-500" : "text-neutral-700"
+          }
         >
           Password is at least 6 characters:
         </p>
       </div>
 
-      <div className="UpperCase">
-        {/[A-Z]/.test(password) ? (
+      <div className="flex">
+        {/[0-9]/.test(password) ? (
           <Check size={20} className="text-green-500" />
         ) : (
-          <X size={20} className="text-grey-400" />
+          <X size={20} className="text-neutral-700" />
         )}
         <p
           className={
-            /[A-Z]/.test(password) ? "text-green-500" : "text-grey-400"
+            /[0-9]/.test(password) ? "text-green-500" : "text-neutral-700"
           }
         >
-          Contains one Upper Case Letter
+          Contains one Number
         </p>
       </div>
 
-      <div className="SpecialCharacter">
+      <div className="flex">
         {containsSpecialChar(password) ? (
           <Check size={20} className="text-green-500" />
         ) : (
-          <X size={20} className="text-grey-400" />
+          <X size={20} className="text-neutral-700" />
         )}
         <p
           className={
-            containsSpecialChar(password) ? "text-green-500" : "text-grey-400"
+            containsSpecialChar(password)
+              ? "text-green-500"
+              : "text-neutral-700"
           }
         >
           Contains one Upper Case Letter

@@ -14,9 +14,9 @@ const PasswordStrength = () => {
   function calculateStrength(password: string): number {
     let strength = 0;
 
-    if (password.length >= 6) strength += 33;
-    if (/[0-9]/.test(password)) strength += 33;
-    if (containsSpecialChar(password)) strength += 34;
+    if (password.length >= 6) strength += 33.3;
+    if (/[0-9]/.test(password)) strength += 33.3;
+    if (containsSpecialChar(password)) strength += 33.3;
     return strength;
   }
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,9 +28,9 @@ const PasswordStrength = () => {
     level: string;
     textColor: string;
   } {
-    if (strength < 33) {
+    if (strength <= 34) {
       return { level: "Weak", textColor: "text-red-500" };
-    } else if (strength < 66) {
+    } else if (strength <= 67) {
       return { level: "Moderate", textColor: "text-yellow-500" };
     } else {
       return { level: "Strong", textColor: "text-green-500" };
@@ -42,6 +42,7 @@ const PasswordStrength = () => {
     <div>
       <Progress className="[&>*]:bg-[#8B6ED4]" value={progressValue} />
       <Input
+        type="password"
         value={password}
         onChange={handleInputChange}
         placeholder="Enter Your Password"
@@ -93,7 +94,7 @@ const PasswordStrength = () => {
               : "text-neutral-700"
           }
         >
-          Contains one Upper Case Letter
+          Contains one Special Character
         </p>
       </div>
     </div>

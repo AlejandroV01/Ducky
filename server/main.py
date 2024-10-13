@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database.supabase import get_users, add_user
 from pydantic import BaseModel
-
+from api.albums import router as albums_router
+from api.photos import router as photo_router
 app = FastAPI()
 
 origins = [
@@ -40,3 +41,6 @@ def create_user(user: User):
     print(f"Response to data: {response}")
     
     return {"data": response}
+
+app.include_router(albums_router)
+app.include_router(photo_router)

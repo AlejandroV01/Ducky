@@ -117,7 +117,7 @@ export default function Auth() {
           </TabsList>
           {/* Sign Up Form */}
           <TabsContent value='signup'>
-            <Card className='max-[520px]:w-full max-[480px]:p-[0] max-[480px]:px-[0] w-[495px] h-[536px] p-2 px-5 shadow-none form-border'>
+            <Card className='max-[520px]:w-full max-[480px]:p-[0] max-[480px]:px-[0] w-[495px] min-h-[536px] h-auto p-2 px-5 shadow-none form-border'>
               <CardHeader className='flex pb-[15px]'>
                 <CardTitle className='text-[#8B97A8] text-[17px]'>Create an account</CardTitle>
               </CardHeader>
@@ -205,7 +205,7 @@ export default function Auth() {
           </TabsContent>
           {/* Sign In Form */}
           <TabsContent value='signin'>
-            <Card className='max-[520px]:w-full max-[480px]:p-[0] max-[480px]:px-[0] w-[495px] h-[358px] p-2 px-5 shadow-none form-border'>
+            <Card className='max-[520px]:w-full max-[480px]:p-[0] max-[480px]:px-[0] w-[495px] min-h-[358px] h-auto p-2 px-5 shadow-none form-border'>
               <CardHeader className='flex pb-[15px]'>
                 <CardTitle className='text-[#8B97A8] text-[17px]'>Welcome back to Ducky</CardTitle>
               </CardHeader>

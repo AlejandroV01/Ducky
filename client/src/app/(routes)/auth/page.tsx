@@ -12,14 +12,22 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-// Responsive Design
-// Currently responsive up to 300px screen width
+// Design stuff
+// Page currently responsive up to 300px screen width
+// Added some 'ducky' color styles to the tailwind.config.ts
+// Added some border styles to globals.css
+// Created GoogleButton and SubmitButton components
+// Installed ShadCN card, form, input, label, tabs
+
+// Form stuff
+// Installed zod for form validation
+// Installed react-hook-form for form state management
 
 // TODO
 // Swag out the Dark Mode
+// Eventually replacing the logo placeholder above the form
 // Auth Functions (Sign Up, Sign In, Google Sign Up, Google Sign In)
 // Left Screen Image Carousel
-// Logo above Form
 
 const signUpSchema = z.object({
   firstName: z.string()
@@ -105,7 +113,7 @@ export default function Auth() {
         <Tabs defaultValue='signup' className='max-[520px]:items-center max-[520px]:justify-center max-[520px]:w-full max-[520px]:px-6'>
           <TabsList className='h-[46px] bg-[#F1F5F9]'>
             <TabsTrigger value='signup' className='h-[36px] ml-[3px] text-md'>Sign Up</TabsTrigger>
-            <TabsTrigger value='signin' className='h-[36px] ml-[3px] text-md'>Login</TabsTrigger>
+            <TabsTrigger value='signin' className='h-[36px] ml-[3px] text-md mr-[3px]'>Login</TabsTrigger>
           </TabsList>
           {/* Sign Up Form */}
           <TabsContent value='signup'>

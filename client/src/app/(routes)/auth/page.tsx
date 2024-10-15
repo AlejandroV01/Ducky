@@ -12,6 +12,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
+// Responsive Design
+// Currently responsive up to 300px screen width
+
+// TODO
+// Swag out the Dark Mode
+// Auth Functions (Sign Up, Sign In, Google Sign Up, Google Sign In)
+// Left Screen Image Carousel
+// Logo above Form
+
 const signUpSchema = z.object({
   firstName: z.string()
   .min(2, {message: 'First name must be at least 2 characters long'})
@@ -87,33 +96,35 @@ export default function Auth() {
     <div className='flex'>
 
       {/* Left yellow image carousel background placeholder */}
-      <div className='bg-yellow-500 h-screen w-[55%]'></div>
+      <div className='max-[1250px]:hidden bg-ducky-bg h-screen w-[56%]'></div>
 
       {/* Right sign in / sign up form */}
-      <div>
-        <Tabs defaultValue='signup'>
-          <TabsList>
-            <TabsTrigger value='signup'>Sign Up</TabsTrigger>
-            <TabsTrigger value='signin'>Sign In</TabsTrigger>
+      <div className='flex items-center justify-center max-[1250px]:w-full w-[44%] flex-col h-screen'>
+        {/* Logo Placeholder */}
+        <div><h1>Logo</h1></div>
+        <Tabs defaultValue='signup' className='max-[520px]:items-center max-[520px]:justify-center max-[520px]:w-full max-[520px]:px-6'>
+          <TabsList className='h-[46px] bg-[#F1F5F9]'>
+            <TabsTrigger value='signup' className='h-[36px] ml-[3px] text-md'>Sign Up</TabsTrigger>
+            <TabsTrigger value='signin' className='h-[36px] ml-[3px] text-md'>Login</TabsTrigger>
           </TabsList>
           {/* Sign Up Form */}
           <TabsContent value='signup'>
-            <Card>
-              <CardHeader>
-                <CardTitle>Create an account</CardTitle>
+            <Card className='max-[520px]:w-full max-[480px]:p-[0] max-[480px]:px-[0] w-[495px] h-[536px] p-2 px-5 shadow-none form-border'>
+              <CardHeader className='flex pb-[15px]'>
+                <CardTitle className='text-[#8B97A8] text-[17px]'>Create an account</CardTitle>
               </CardHeader>
               <CardContent>
                 <Form {...signUpForm}>
                   <form onSubmit={signUpForm.handleSubmit(onSignUpSubmit)}>
-                    <div>
+                    <div className='grid grid-cols-2 gap-4'>
                       <FormField
                         control={signUpForm.control}
                         name='firstName'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>First Name</FormLabel>
+                            <FormLabel className='max-[480px]:text-base text-lg'>First Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="First Name" {...field}/>
+                              <Input placeholder="First Name" {...field} className='max-[520px]:w-full input-border text-md h-[41px] w-[193px]'/>
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.firstName?.message}</FormMessage>
                           </FormItem>
@@ -125,24 +136,24 @@ export default function Auth() {
                         name='lastName'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Last Name</FormLabel>
+                            <FormLabel className='max-[480px]:text-base text-lg'>Last Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="Last Name" {...field}/>
+                              <Input placeholder="Last Name" {...field} className='max-[520px]:w-full input-border text-md h-[41px] w-[193px]'/>
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.lastName?.message}</FormMessage>
                           </FormItem>
                         )}
                       />
                     </div>
-                    <div>
+                    <div className='flex gap-[12px] flex-col pt-[12px]'>
                       <FormField
                         control={signUpForm.control}
                         name='email'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel className='max-[480px]:text-base text-lg'>Email</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="example@gmail.com" {...field}/>
+                              <Input type="email" placeholder="example@gmail.com" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.email?.message}</FormMessage>
                           </FormItem>
@@ -153,9 +164,9 @@ export default function Auth() {
                         name='username'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel className='max-[480px]:text-base text-lg'>Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="Username" {...field}/>
+                              <Input placeholder="Username" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.username?.message}</FormMessage>
                           </FormItem>
@@ -166,18 +177,18 @@ export default function Auth() {
                         name='password'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel className='max-[480px]:text-base text-lg'>Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Password" {...field}/>
+                              <Input type="password" placeholder="Password" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.password?.message}</FormMessage>
                           </FormItem>
                         )}
                       />
                     </div>
-                    <div>
-                      <SubmitButton text={"Continue"}/>
-                      <GoogleButton onPoke={onGoogleSignIn} text={"Google"}/>
+                    <div className='pt-[25px] flex flex-row justify-between max-[520px]:gap-4'>
+                      <SubmitButton text={"Sign Up"} pixelWidth={172} pixelHeight={46}/>
+                      <GoogleButton onPoke={onGoogleSignUp} text={"Google"} pixelWidth={157} pixelHeight={46}/>
                     </div>
                   </form>
                 </Form>
@@ -186,22 +197,22 @@ export default function Auth() {
           </TabsContent>
           {/* Sign In Form */}
           <TabsContent value='signin'>
-            <Card>
-              <CardHeader>
-                <CardTitle>Welcome back to Ducky</CardTitle>
+            <Card className='max-[520px]:w-full max-[480px]:p-[0] max-[480px]:px-[0] w-[495px] h-[358px] p-2 px-5 shadow-none form-border'>
+              <CardHeader className='flex pb-[15px]'>
+                <CardTitle className='text-[#8B97A8] text-[17px]'>Welcome back to Ducky</CardTitle>
               </CardHeader>
               <CardContent>
                 <Form {...signInForm}>
                   <form onSubmit={signInForm.handleSubmit(onSignInSubmit)}>
-                    <div>
+                    <div className='flex gap-[12px] flex-col'>
                       <FormField
                         control={signInForm.control}
                         name='username'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel className='max-[480px]:text-base text-lg'>Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="Username" {...field}/>
+                              <Input placeholder="Username" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
                             </FormControl>
                             <FormMessage>{signInForm.formState.errors.username?.message}</FormMessage>
                           </FormItem>
@@ -212,18 +223,18 @@ export default function Auth() {
                         name='password'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel className='max-[480px]:text-base text-lg'>Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Password" {...field}/>
+                              <Input type="password" placeholder="Password" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
                             </FormControl>
                             <FormMessage>{signInForm.formState.errors.password?.message}</FormMessage>
                           </FormItem>
                         )}
                       />
                     </div>
-                    <div>
-                      <SubmitButton text={"Continue"}/>
-                      <GoogleButton onPoke={onGoogleSignUp} text={"Google"}/>
+                    <div className='pt-[25px] flex flex-row justify-between max-[520px]:gap-4'>
+                      <SubmitButton text={"Login"} pixelWidth={146} pixelHeight={46}/>
+                      <GoogleButton onPoke={onGoogleSignIn} text={"Google"} pixelWidth={157} pixelHeight={46}/>
                     </div>
                   </form>
                 </Form>

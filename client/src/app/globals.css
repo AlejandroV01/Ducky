@@ -64,3 +64,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.form-border {
+  @apply border border-[#ECF0F5] border-[2px];
+}
+
+.input-border {
+  @apply border border-[#d0d8e0] border-[1.6px];
+}

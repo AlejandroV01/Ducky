@@ -14,3 +14,12 @@ def get_users():
 def add_user(data):
     print(f"Adding user: {data}")
     return supabase.table("user").insert(data).execute()
+
+def check_user_in_db(username):
+    print(f"Checking user: {username}")
+    # Adjust as needed for your actual supabase client and environment
+    response = supabase.table("user").select("*").eq("user_name", username).execute()
+    
+    if not response.data or len(response.data) == 0:
+        return False
+    return True

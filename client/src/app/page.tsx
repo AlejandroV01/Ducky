@@ -19,6 +19,23 @@ export default function Home() {
     }
   }
 
+  const handleCheckUser = async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch('http://127.0.0.1:8000/check-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: 'johndoe' }),
+      })
+      if (!res.ok) throw new Error('Failed to fetch')
+      console.log(await res.json())
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleInsert = async () => {
     setIsLoading(true)
     const newUser = {
@@ -52,6 +69,10 @@ export default function Home() {
       </Button>
       <Button className='flex items-center justify-center gap-1' onClick={handleInsert} disabled={isLoading}>
         <span>Insert Users</span>
+        {isLoading && <Loader className='animate-spin' size={16} />}
+      </Button>
+      <Button className='flex items-center justify-center gap-1' onClick={handleCheckUser} disabled={isLoading}>
+        <span>Check johndoe</span>
         {isLoading && <Loader className='animate-spin' size={16} />}
       </Button>
     </div>

@@ -46,38 +46,38 @@ def create_user(user: User):
 
 
 # -- Album Role Routes --
-# Will need some middleware to check if  user is the owner of the album, I think
-# Only owner of the album can add, update, and delete album roles
+# Will need some middleware to verify if user is the owner of the album, fairly certain
+# Only owner of the album can add, update, and delete album roles (I assume)
 # Any user can view album roles, probably idk tho
 
 # Get album role for a given album and user
 @app.get("/album/{album_id}/user/{user_id}/album_roles")
-def read_album_role(album_id: UUID, user_id: UUID):
-    response = get_album_role(album_id, user_id)
+def read_album_role(user_id: UUID, album_id: UUID):
+    response = get_album_role(user_id, album_id)
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"data": response.data[0]}
 
 # Add album role to user for a given album
 @app.post("/album/{album_id}/user/{user_id}/album_roles")
-def create_album_role(album_id: UUID, user_id: UUID, role: AlbumAccess):
-    response = add_album_role(album_id, user_id, role)
+def create_album_role(user_id: UUID, album_id: UUID, role: AlbumAccess):
+    response = add_album_role(user_id, album_id, role)
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"data": response.data[0]}
 
 # Update album role for a given album and user
 @app.put("/album/{album_id}/user/{user_id}/album_roles/{role_id}")
-def update_role(album_id: UUID, user_id: UUID, role_id: UUID, new_role: AlbumAccess):
-    response = update_album_role(album_id, user_id, role_id, new_role)
+def update_role(user_id: UUID, album_id: UUID, role_id: UUID, new_role: AlbumAccess):
+    response = update_album_role(user_id, album_id, role_id, new_role)
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"data": response.data[0]}
 
 # Delete album role for a given album and user
 @app.delete("/album/{album_id}/user/{user_id}/album_roles/{role_id}")
-def remove_album_role(album_id: UUID, user_id: UUID, role_id: UUID):
-    response = delete_album_role(album_id, user_id, role_id)
+def remove_album_role(user_id: UUID, album_id: UUID, role_id: UUID):
+    response = delete_album_role(user_id, album_id, role_id)
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"message": "Album role deleted successfully"}

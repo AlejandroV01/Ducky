@@ -1,9 +1,14 @@
 from database.supabase import supabase
 
+# PUBLIC ROUTES
+
 def get_album_role(user_id, album_id):
     return supabase.table('album_role').select('*').eq('album_id', album_id).eq('user_id', user_id).execute()
 
+# ADMIN ROUTES
+
 def add_album_role(user_id, album_id, role):
+
     new_role = {
         'user_id': user_id,
         'album_id': album_id,

@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from api.users import get_users, add_user
 from api.album_roles import add_album_role, get_album_role, update_album_role, delete_album_role
+from util.verifyAdmin import verify_admin
 from database.models.album_role import AlbumAccess
 from pydantic import BaseModel
 
@@ -45,26 +46,30 @@ def create_user(user: User):
 
 
 # -- Album Role Routes --
-# Will need some middleware to verify if user is the owner of the album, fairly certain
-# Only owner of the album can add, update, and delete album roles (I assume)
-# Any user can view album roles, probably idk tho
+
+# PUBLIC ROUTES / Any user is able to view any given user's album roles
 
 # Get album role for a given album and user
 @app.get("/album/{album_id}/user/{user_id}/album_roles")
 def read_album_role(user_id, album_id):
+
     response = get_album_role(user_id, album_id)
+
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"data": response.data}
 
 
+# ADMIN ROUTES / Only the album admin can add, update, or delete album roles
 
 class RoleRequest(BaseModel):
     role: AlbumAccess
 
 # Add album role to user for a given album
-@app.post("/album/{album_id}/user/{user_id}/album_roles")
-async def create_album_role(user_id, album_id, req: RoleRequest):
+@app.post("/album/{album_id}/admin/{admin_id}/user/{user_id}/album_roles")
+def create_album_role(user_id, album_id, req: RoleRequest, admin_id):
+
+    verify_admin(admin_id, album_id)
     
     response = add_album_role(user_id, album_id, req.role)
 
@@ -75,8 +80,10 @@ async def create_album_role(user_id, album_id, req: RoleRequest):
 
 
 # Update album role for a given album and user
-@app.put("/album/{album_id}/user/{user_id}/album_roles/{id}")
-def update_role(user_id, album_id, id, req: RoleRequest):
+@app.put("/album/{album_id}/admin/{admin_id}/user/{user_id}/album_roles/{id}")
+def update_role(user_id, album_id, id, req: RoleRequest, admin_id):
+
+    verify_admin(admin_id, album_id)
 
     response = update_album_role(user_id, album_id, id, req.role)
 
@@ -87,8 +94,10 @@ def update_role(user_id, album_id, id, req: RoleRequest):
 
 
 # Delete album role for a given album and user
-@app.delete("/album/{album_id}/user/{user_id}/album_roles/{id}")
-def remove_album_role(user_id, album_id, id):
+@app.delete("/album/{album_id}/admin/{admin_id}/user/{user_id}/album_roles/{id}")
+def remove_album_role(user_id, album_id, id, admin_id):
+
+    verify_admin(admin_id, album_id)
 
     response = delete_album_role(user_id, album_id, id)
 

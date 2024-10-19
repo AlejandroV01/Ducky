@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.users import get_users, add_user
 from api.album_roles import add_album_role, get_album_role, update_album_role, delete_album_role
 from database.models.album_role import AlbumAccess
-from uuid import UUID
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -52,32 +51,47 @@ def create_user(user: User):
 
 # Get album role for a given album and user
 @app.get("/album/{album_id}/user/{user_id}/album_roles")
-def read_album_role(user_id: UUID, album_id: UUID):
+def read_album_role(user_id, album_id):
     response = get_album_role(user_id, album_id)
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
-    return {"data": response.data[0]}
+    return {"data": response.data}
+
+
+
+class RoleRequest(BaseModel):
+    role: AlbumAccess
 
 # Add album role to user for a given album
 @app.post("/album/{album_id}/user/{user_id}/album_roles")
-def create_album_role(user_id: UUID, album_id: UUID, role: AlbumAccess):
-    response = add_album_role(user_id, album_id, role)
+async def create_album_role(user_id, album_id, req: RoleRequest):
+    
+    response = add_album_role(user_id, album_id, req.role)
+
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"data": response.data[0]}
+
+
 
 # Update album role for a given album and user
-@app.put("/album/{album_id}/user/{user_id}/album_roles/{role_id}")
-def update_role(user_id: UUID, album_id: UUID, role_id: UUID, new_role: AlbumAccess):
-    response = update_album_role(user_id, album_id, role_id, new_role)
+@app.put("/album/{album_id}/user/{user_id}/album_roles/{id}")
+def update_role(user_id, album_id, id, req: RoleRequest):
+
+    response = update_album_role(user_id, album_id, id, req.role)
+
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"data": response.data[0]}
 
+
+
 # Delete album role for a given album and user
-@app.delete("/album/{album_id}/user/{user_id}/album_roles/{role_id}")
-def remove_album_role(user_id: UUID, album_id: UUID, role_id: UUID):
-    response = delete_album_role(user_id, album_id, role_id)
+@app.delete("/album/{album_id}/user/{user_id}/album_roles/{id}")
+def remove_album_role(user_id, album_id, id):
+
+    response = delete_album_role(user_id, album_id, id)
+
     if not response.data:
         raise HTTPException(status_code=404, detail="Album role not found")
     return {"message": "Album role deleted successfully"}

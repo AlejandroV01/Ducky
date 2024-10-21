@@ -1,16 +1,16 @@
 'use client'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import React from 'react'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 
-import SubmitButton from "@/components/buttons/SubmitButton"
-import GoogleButton from "@/components/buttons/GoogleButton"
-
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import GoogleButton from '@/components/buttons/GoogleButton'
+import SubmitButton from '@/components/buttons/SubmitButton'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import Showcase from './Showcase'
 
 // Design stuff
 // Page currently responsive up to 300px screen width
@@ -30,29 +30,34 @@ import * as z from "zod"
 // Left Screen Image Carousel
 
 const signUpSchema = z.object({
-  firstName: z.string()
-  .min(2, {message: 'First name must be at least 2 characters long'})
-  .max(255, {message: 'First name must be at most 255 characters long'}),
-  lastName: z.string()
-  .min(2, {message: 'Last name must be at least 2 characters long'})
-  .max(255, {message: 'Last name must be at most 255 characters long'}),
-  email: z.string()
-  .email({message: 'Email must be a valid email'}),
-  username: z.string()
-  .min(2, {message: 'Username must be at least 2 characters long'})
-  .max(255, {message: 'Username must be at most 255 characters long'}),
-  password: z.string()
-  .min(8, {message: 'Password must be at least 8 characters long'})
-  .max(255, {message: 'Password must be at most 255 characters long'})
+  firstName: z
+    .string()
+    .min(2, { message: 'First name must be at least 2 characters long' })
+    .max(255, { message: 'First name must be at most 255 characters long' }),
+  lastName: z
+    .string()
+    .min(2, { message: 'Last name must be at least 2 characters long' })
+    .max(255, { message: 'Last name must be at most 255 characters long' }),
+  email: z.string().email({ message: 'Email must be a valid email' }),
+  username: z
+    .string()
+    .min(2, { message: 'Username must be at least 2 characters long' })
+    .max(255, { message: 'Username must be at most 255 characters long' }),
+  password: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters long' })
+    .max(255, { message: 'Password must be at most 255 characters long' }),
 })
 
 const signInScheme = z.object({
-  username: z.string()
-  .min(2, {message: 'Username must be at least 2 characters long'})
-  .max(255, {message: 'Username must be at most 255 characters long'}),
-  password: z.string()
-  .min(8, { message: 'Password must be at least 8 characters long'})
-  .max(255, { message: 'Password must be at most 255 characters long'}),
+  username: z
+    .string()
+    .min(2, { message: 'Username must be at least 2 characters long' })
+    .max(255, { message: 'Username must be at most 255 characters long' }),
+  password: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters long' })
+    .max(255, { message: 'Password must be at most 255 characters long' }),
 })
 
 type SignUpFormValues = z.infer<typeof signUpSchema>
@@ -60,7 +65,6 @@ type SignInFormValues = z.infer<typeof signInScheme>
 
 // Sign In / Sign Up Form w/ Dope yellow background on the left
 export default function Auth() {
-
   const signUpForm = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -102,18 +106,23 @@ export default function Auth() {
 
   return (
     <div className='flex'>
-
       {/* Left yellow image carousel background placeholder */}
-      <div className='max-[1250px]:hidden bg-ducky-bg h-screen w-[56%]'></div>
+      <Showcase />
 
       {/* Right sign in / sign up form */}
       <div className='flex items-center justify-center max-[1250px]:w-full w-[44%] flex-col h-screen'>
         {/* Logo Placeholder */}
-        <div><h1>Logo</h1></div>
+        <div>
+          <h1>Logo</h1>
+        </div>
         <Tabs defaultValue='signup' className='max-[520px]:items-center max-[520px]:justify-center max-[520px]:w-full max-[520px]:px-6'>
           <TabsList className='h-[46px] bg-[#F1F5F9]'>
-            <TabsTrigger value='signup' className='h-[36px] ml-[3px] text-md'>Sign Up</TabsTrigger>
-            <TabsTrigger value='signin' className='h-[36px] ml-[3px] text-md mr-[3px]'>Login</TabsTrigger>
+            <TabsTrigger value='signup' className='h-[36px] ml-[3px] text-md'>
+              Sign Up
+            </TabsTrigger>
+            <TabsTrigger value='signin' className='h-[36px] ml-[3px] text-md mr-[3px]'>
+              Login
+            </TabsTrigger>
           </TabsList>
           {/* Sign Up Form */}
           <TabsContent value='signup'>
@@ -132,7 +141,7 @@ export default function Auth() {
                           <FormItem>
                             <FormLabel className='max-[480px]:text-base text-lg'>First Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="First Name" {...field} className='max-[520px]:w-full input-border text-md h-[41px] w-[193px]'/>
+                              <Input placeholder='First Name' {...field} className='max-[520px]:w-full input-border text-md h-[41px] w-[193px]' />
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.firstName?.message}</FormMessage>
                           </FormItem>
@@ -146,7 +155,7 @@ export default function Auth() {
                           <FormItem>
                             <FormLabel className='max-[480px]:text-base text-lg'>Last Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="Last Name" {...field} className='max-[520px]:w-full input-border text-md h-[41px] w-[193px]'/>
+                              <Input placeholder='Last Name' {...field} className='max-[520px]:w-full input-border text-md h-[41px] w-[193px]' />
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.lastName?.message}</FormMessage>
                           </FormItem>
@@ -161,7 +170,12 @@ export default function Auth() {
                           <FormItem>
                             <FormLabel className='max-[480px]:text-base text-lg'>Email</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="example@gmail.com" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
+                              <Input
+                                type='email'
+                                placeholder='example@gmail.com'
+                                {...field}
+                                className='max-[520px]:w-full input-border text-md h-[41px]'
+                              />
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.email?.message}</FormMessage>
                           </FormItem>
@@ -174,7 +188,7 @@ export default function Auth() {
                           <FormItem>
                             <FormLabel className='max-[480px]:text-base text-lg'>Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="Username" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
+                              <Input placeholder='Username' {...field} className='max-[520px]:w-full input-border text-md h-[41px]' />
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.username?.message}</FormMessage>
                           </FormItem>
@@ -187,7 +201,7 @@ export default function Auth() {
                           <FormItem>
                             <FormLabel className='max-[480px]:text-base text-lg'>Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Password" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
+                              <Input type='password' placeholder='Password' {...field} className='max-[520px]:w-full input-border text-md h-[41px]' />
                             </FormControl>
                             <FormMessage>{signUpForm.formState.errors.password?.message}</FormMessage>
                           </FormItem>
@@ -195,8 +209,8 @@ export default function Auth() {
                       />
                     </div>
                     <div className='pt-[25px] flex flex-row justify-between max-[520px]:gap-4'>
-                      <SubmitButton text={"Sign Up"} pixelWidth={172} pixelHeight={46}/>
-                      <GoogleButton onPoke={onGoogleSignUp} text={"Google"} pixelWidth={157} pixelHeight={46}/>
+                      <SubmitButton text={'Sign Up'} pixelWidth={172} pixelHeight={46} />
+                      <GoogleButton onPoke={onGoogleSignUp} text={'Google'} pixelWidth={157} pixelHeight={46} />
                     </div>
                   </form>
                 </Form>
@@ -220,7 +234,7 @@ export default function Auth() {
                           <FormItem>
                             <FormLabel className='max-[480px]:text-base text-lg'>Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="Username" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
+                              <Input placeholder='Username' {...field} className='max-[520px]:w-full input-border text-md h-[41px]' />
                             </FormControl>
                             <FormMessage>{signInForm.formState.errors.username?.message}</FormMessage>
                           </FormItem>
@@ -233,7 +247,7 @@ export default function Auth() {
                           <FormItem>
                             <FormLabel className='max-[480px]:text-base text-lg'>Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Password" {...field} className='max-[520px]:w-full input-border text-md h-[41px]'/>
+                              <Input type='password' placeholder='Password' {...field} className='max-[520px]:w-full input-border text-md h-[41px]' />
                             </FormControl>
                             <FormMessage>{signInForm.formState.errors.password?.message}</FormMessage>
                           </FormItem>
@@ -241,8 +255,8 @@ export default function Auth() {
                       />
                     </div>
                     <div className='pt-[25px] flex flex-row justify-between max-[520px]:gap-4'>
-                      <SubmitButton text={"Login"} pixelWidth={146} pixelHeight={46}/>
-                      <GoogleButton onPoke={onGoogleSignIn} text={"Google"} pixelWidth={157} pixelHeight={46}/>
+                      <SubmitButton text={'Login'} pixelWidth={146} pixelHeight={46} />
+                      <GoogleButton onPoke={onGoogleSignIn} text={'Google'} pixelWidth={157} pixelHeight={46} />
                     </div>
                   </form>
                 </Form>
@@ -251,7 +265,6 @@ export default function Auth() {
           </TabsContent>
         </Tabs>
       </div>
-
     </div>
   )
 }

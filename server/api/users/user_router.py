@@ -1,6 +1,6 @@
 # create a FastAPI route for the CRUD operations of the user
 
-from schemas import *
+from .schemas import *
 from database.models import User
 from datetime import datetime
 from fastapi import APIRouter

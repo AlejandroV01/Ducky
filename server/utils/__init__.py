@@ -1,1 +1,1 @@
-import response_generator
+from .response_generator import generate_response

@@ -1,17 +1,18 @@
 from pydantic import BaseModel
+from typing import Any
 
 class Response(BaseModel):
-    data: dict
+    data: Any  # Allow data to be a dictionary (JSON object)
     error: str
     status: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-def generate_response(data:dict=None, error:str='', status:int=200):
+def generate_response(data: Any = None, error: str = '', status: int = 200):
     response = Response(
         data=data,
         error=error,
         status=status
     )
-    return response.model_dump()
+    return response.model_dump()  # Return the serialized response

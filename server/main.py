@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database.supabase import get_users, add_user
+from database.supabase_service import get_users, add_user
 from pydantic import BaseModel
 
 app = FastAPI()

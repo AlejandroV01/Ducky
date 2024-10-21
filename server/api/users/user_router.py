@@ -1,5 +1,8 @@
 # create a FastAPI route for the CRUD operations of the user
 
+from schemas import *
+from database.models import User
+from datetime import datetime
 from fastapi import APIRouter
 from database.supabase_service import SupabaseService
 from utils import response_generator
@@ -22,8 +25,17 @@ def get_all():
 
 
 @router.post("/")
-def add_user(data):
-    response = db.save(data)
+def add_user(data: CreateUser):
+    new_user = User(
+        first_name=data.first_name,
+        last_name=data.last_name,
+        icon_url=data.icon_url if data.icon_url else "",
+        email=data.email,
+        password=data.password,
+        created_on=datetime.now()
+    )
+
+    response = db.save(new_user.model_dump())
     if response.data:
         return response_generator.generate_response(response.data, status=201)
     else:

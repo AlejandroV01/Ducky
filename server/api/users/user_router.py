@@ -41,9 +41,24 @@ def add_user(data: CreateUser):
     else:
         return response_generator.generate_response(error="User not created", status=404)
 
+@router.put("/{id}")
+def update_user(id:str, data:CreateUser):
+
+    response = db.update(id, data.dict())
+
+    if response.data:
+        return response_generator.generate_response(response.data, status=200)
+    else:
+        return response_generator.generate_response(error="User not updated", status=404)
 
 @router.get("/{id}")
 def get_by_id(id:str):
     return db.get_by_id(id)
 
-
+@router.delete("/{id}")
+def delete_user(id:str):
+    response = db.delete(id)
+    if response.data:
+        return response_generator.generate_response(response.data, status=200)
+    else:
+        return response_generator.generate_response(error="User not deleted", status=404)

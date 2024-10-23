@@ -59,10 +59,13 @@ def add_user(data: CreateUser):
 
 @router.put("/{id}")
 def update_user(id:str, data:CreateUser):
-
-    response = db.update(id, data.dict())
+    response = db.update(id, data)
 
     if response.data:
+        updated_user = response.data[0]
+        response = UserResponse(
+            **updated_user
+        )
         return response_generator.generate_response(response.data, status=200)
     else:
         return response_generator.generate_response(error="User not updated", status=404)

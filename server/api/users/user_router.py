@@ -57,7 +57,12 @@ def update_user(id:str, data:CreateUser):
 
 @router.get("/{id}")
 def get_by_id(id:str):
-    return db.get_by_id(id)
+    response = db.get_by_id(id)
+    
+    if response.data:
+        return response_generator.generate_response(response.data, status=200)
+    else:
+        return response_generator.generate_response(error="User not found", status=404)
 
 @router.delete("/{id}")
 def delete_user(id:str):

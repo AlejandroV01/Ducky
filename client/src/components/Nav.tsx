@@ -25,7 +25,7 @@ const Navbar = () => {
     router.push('/')
   }
   return (
-    <nav className='w-full py-2 bg-background flex items-center justify-between relative shadow-[0px_0px_10px_0px] px-20'>
+    <nav className='w-full py-2 bg-background flex items-center justify-between relative shadow-[0px_0px_10px_0px] px-20 mb-4'>
       <div className='w-12'></div>
       <Link href={'/'} className='absolute left-1/2 transform -translate-x-1/2'>
         <img src='/images/logo.svg' alt='logo' className='w-[50px]' />

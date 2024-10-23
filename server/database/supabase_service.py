@@ -1,4 +1,5 @@
 from supabase import create_client, Client
+from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 
@@ -27,13 +28,13 @@ class SupabaseService:
             """
         return supabase.table(self.table).select("*").execute()
 
-    def save(self, data):
+    def save(self, data: BaseModel):
         """
         Add data to a table
         :param data: the data to add to the table
         :return: the response from the database
         """
-        return supabase.table(self.table).insert(data).execute()
+        return supabase.table(self.table).insert(data.model_dump(mode="json")).execute()
 
     def get_by_id(self, id):
         """
@@ -80,10 +81,10 @@ class SupabaseService:
             query = query.eq(field, value)
         return query.execute()
 
-
-def get_users():
-    return supabase.table("user").select("*").execute()
-
-def add_user(data):
-    print(f"Adding user: {data}")
-    return supabase.table("user").insert(data).execute()
+#
+# def get_users():
+#     return supabase.table("user").select("*").execute()
+#
+# def add_user(data):
+#     print(f"Adding user: {data}")
+#     return supabase.table("user").insert(data).execute()

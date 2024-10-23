@@ -21,13 +21,10 @@ export const authSlice = createSlice({
         ...action.payload,
       }
     },
-    addProfileUuid: (state, action: PayloadAction<string>) => {
-      state.id = action.payload
-    },
     removeProfile: () => initialState,
   },
 })
 
-export const { addProfile, removeProfile, addProfileUuid } = authSlice.actions
+export const { addProfile, removeProfile } = authSlice.actions
 
 export default authSlice.reducer

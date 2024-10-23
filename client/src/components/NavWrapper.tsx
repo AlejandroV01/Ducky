@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import React from 'react'
 
 const NavWrapper = () => {
-  const excludedRoutes = ['/auth', '/login', '/signup']
+  const excludedRoutes = ['/auth']
 
   const pathname = usePathname()
 

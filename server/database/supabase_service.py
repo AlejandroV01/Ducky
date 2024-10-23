@@ -44,14 +44,14 @@ class SupabaseService:
         """
         return supabase.table(self.table).select("*").eq("id", id).execute()
 
-    def update(self, id:str, data:dict):
+    def update(self, id:str, data:BaseModel):
         """
         Update data in a table
         :param id: the id of the data to update
         :param data: the data to update
         :return: the response from the database
         """
-        return supabase.table(self.table).update(data).eq("id", id).execute()
+        return supabase.table(self.table).update(data.model_dump(mode="json")).eq("id", id).execute()
 
     def delete(self, id:str):
         """

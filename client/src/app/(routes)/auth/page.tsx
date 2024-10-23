@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -8,10 +9,10 @@ import React from 'react'
 import GoogleButton from '@/components/buttons/GoogleButton'
 import SubmitButton from '@/components/buttons/SubmitButton'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import Showcase from './Showcase'
-
 // Design stuff
 // Page currently responsive up to 300px screen width
 // Added some 'ducky' color styles to the tailwind.config.ts
@@ -105,16 +106,16 @@ export default function Auth() {
   }
 
   return (
-    <div className='flex'>
+    <div className='flex w-full'>
       {/* Left yellow image carousel background placeholder */}
       <Showcase />
 
       {/* Right sign in / sign up form */}
       <div className='flex items-center justify-center max-[1250px]:w-full w-[44%] flex-col h-screen'>
         {/* Logo Placeholder */}
-        <div>
-          <h1>Logo</h1>
-        </div>
+        <Link href={'/'}>
+          <img src='/images/logo.svg' alt='app logo' className='w-[50px]' />
+        </Link>
         <Tabs defaultValue='signup' className='max-[520px]:items-center max-[520px]:justify-center max-[520px]:w-full max-[520px]:px-6'>
           <TabsList className='h-[46px] bg-[#F1F5F9]'>
             <TabsTrigger value='signup' className='h-[36px] ml-[3px] text-md'>

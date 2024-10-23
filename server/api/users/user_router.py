@@ -39,19 +39,7 @@ def add_user(data: CreateUser):
 
     if response.data:
         saved_user = response.data[0]
-
-        # Convert UUID to string only when returning the response
-        response_model = UserResponse(
-            id=str(saved_user["id"]),  # Convert UUID to string here
-            email=saved_user["email"],
-            first_name=saved_user["first_name"],
-            last_name=saved_user["last_name"],
-            user_name=saved_user["user_name"],
-            icon_url=saved_user["icon_url"],
-            created_on=saved_user["created_on"]
-        )
-
-        return response_generator.generate_response(response_model, status=201)
+        return response_generator.generate_response(saved_user, status=201)
 
     # Handle case when user creation fails
     raise HTTPException(status_code=404, detail="User not created")
@@ -63,10 +51,7 @@ def update_user(id:str, data:CreateUser):
 
     if response.data:
         updated_user = response.data[0]
-        response = UserResponse(
-            **updated_user
-        )
-        return response_generator.generate_response(response.data, status=200)
+        return response_generator.generate_response(updated_user, status=200)
     else:
         return response_generator.generate_response(error="User not updated", status=404)
 

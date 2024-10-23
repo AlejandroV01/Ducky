@@ -1,6 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from api import add_routers
+from utils import Response
 # from database.supabase import get_users, add_user, check_user_in_db
 # from pydantic import BaseModel
 
@@ -18,6 +21,19 @@ app.add_middleware(
     allow_methods=["*"], 
     allow_headers=["*"], 
 )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc):
+    response = Response(
+        data=None,
+        error="Invalid request data",
+        status=400
+    )
+
+    return JSONResponse(
+        status_code=400,
+        content=response.model_dump()
+    )
 
 @app.get("/")
 def read_root():

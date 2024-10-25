@@ -59,6 +59,24 @@ export default function Home() {
     }
   }
 
+  const handleGetUser = async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch('http://127.0.0.1:8000/users/92ff0041-eef8-4afd-a913-413076111af9', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if (!res.ok) throw new Error('Failed to fetch')
+      console.log(await res.json())
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className='flex flex-col items-center gap-10'>
       <h1 className='text-yellow-600 text-3xl font-bold text-center'>Welcome to Ducky</h1>
@@ -73,6 +91,10 @@ export default function Home() {
       </Button>
       <Button className='flex items-center justify-center gap-1' onClick={handleCheckUser} disabled={isLoading}>
         <span>Check johndoe</span>
+        {isLoading && <Loader className='animate-spin' size={16} />}
+      </Button>
+      <Button className='flex items-center justify-center gap-1' onClick={handleGetUser} disabled={isLoading}>
+        <span>Get Ducky</span>
         {isLoading && <Loader className='animate-spin' size={16} />}
       </Button>
     </div>

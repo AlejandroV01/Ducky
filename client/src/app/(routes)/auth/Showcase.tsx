@@ -15,7 +15,7 @@ const Showcase = () => {
     y: [0, -singleSetHeight],
     transition: {
       repeat: Infinity,
-      duration: 40,
+      duration: 90,
       ease: 'linear',
     },
   }
@@ -24,7 +24,7 @@ const Showcase = () => {
     y: [-singleSetHeight, 0],
     transition: {
       repeat: Infinity,
-      duration: 40,
+      duration: 90,
       ease: 'linear',
     },
   }
@@ -33,7 +33,7 @@ const Showcase = () => {
     <div className='max-[1250px]:hidden bg-ducky-bg h-screen w-[56%] overflow-hidden'>
       <div className='flex justify-center gap-32'>
         {images.map((imageSet, columnIndex) => {
-          const duplicatedImages = [...imageSet, ...imageSet]
+          const duplicatedImages = [...imageSet, ...imageSet, ...imageSet]
 
           return (
             <motion.div
@@ -56,9 +56,18 @@ const Showcase = () => {
 export default Showcase
 
 const Polaroid = ({ src }: { src: string }) => {
+  const placeholderImage = 'https://placehold.co/190x240?text=Loading...'
+
   return (
     <div className='relative bg-slate-200 w-[190px] p-3 pb-10 shadow-[5px_5px_10px_0px_rgba(0,0,0,0.3)]'>
-      <img src={src} alt='a polaroid picture' className='w-full' />
+      <img
+        src={src}
+        alt='a polaroid picture'
+        className='w-full'
+        onError={e => {
+          e.currentTarget.src = placeholderImage
+        }}
+      />
     </div>
   )
 }

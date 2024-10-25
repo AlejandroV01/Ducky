@@ -1,19 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
+import GoogleButton from '@/components/buttons/GoogleButton'
+import SubmitButton from '@/components/buttons/SubmitButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import React from 'react'
-
-import GoogleButton from '@/components/buttons/GoogleButton'
-import SubmitButton from '@/components/buttons/SubmitButton'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import Showcase from './Showcase'
+import checkUserTaken from './UserNameAvailability'
 // Design stuff
 // Page currently responsive up to 300px screen width
 // Added some 'ducky' color styles to the tailwind.config.ts

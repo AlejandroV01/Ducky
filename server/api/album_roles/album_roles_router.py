@@ -15,7 +15,6 @@ db = SupabaseService("album_role")
 
 
 # PUBLIC ROUTES / Any user is able to view any given user's album roles
-
 # Get album role for a given album and user
 @router.get("/user/{user_id}/album_roles")
 def get_all(user_id, album_id):

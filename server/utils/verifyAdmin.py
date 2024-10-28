@@ -1,16 +1,18 @@
 from database.supabase_service import SupabaseService
-from utils import response_generator
+from fastapi import HTTPException
 
-'''
-Check if the 'admin' making a request is actually
-the admin of the album, used for admin protected routes
-'''
+"""
+Check if the user making the request is the admin of the album,
+used for admin protected routes, throws err if not admin
+:param admin_id: the id of the user making the request
+:param album_id: the id of the album to check against
+"""
 def verify_admin(admin_id, album_id):
     db = SupabaseService("album")
     response = db.get_by_id(album_id)
     if response.data:
         album = response.data[0]
         if album["admin_id"] != admin_id:
-            response_generator.generate_response(error="Unauthorized", status=401)
+            raise HTTPException(status_code=401, detail="Unauthorized")
     else:
-        response_generator.generate_response(error="Album not found", status=404)
+        raise HTTPException(status_code=404, detail="Album not found")

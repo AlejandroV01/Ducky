@@ -1,15 +1,15 @@
 'use client'
 
 import Nav from '@/components/Nav'
+import { useAppSelector } from '@/store/hooks'
 import { usePathname } from 'next/navigation'
 import React from 'react'
-
 const NavWrapper = () => {
   const excludedRoutes = ['/auth']
 
   const pathname = usePathname()
-
-  if (excludedRoutes.includes(pathname)) {
+  const isLoggedIn = useAppSelector(state => state.auth.user_name) !== ''
+  if (excludedRoutes.includes(pathname) || isLoggedIn) {
     return null
   }
 

@@ -6,7 +6,7 @@ const initialState: User = {
   email: '',
   first_name: '',
   last_name: '',
-  user_name: '',
+  user_name: 'lebron_james',
   icon_url: '',
   created_on: '',
 }

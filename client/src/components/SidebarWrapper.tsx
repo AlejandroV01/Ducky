@@ -1,19 +1,21 @@
 'use client'
 
-import Nav from '@/components/Nav'
 import { useAppSelector } from '@/store/hooks'
 import { usePathname } from 'next/navigation'
 import React from 'react'
-const NavWrapper = () => {
+import Sidebar from './Sidebar'
+
+const SidebarWrapper = () => {
   const excludedRoutes = ['/auth']
 
   const pathname = usePathname()
   const isLoggedIn = useAppSelector(state => state.auth.user_name) !== ''
-  if (excludedRoutes.includes(pathname) || isLoggedIn) {
+
+  if (excludedRoutes.includes(pathname) || !isLoggedIn) {
     return null
   }
 
-  return <Nav />
+  return <Sidebar />
 }
 
-export default NavWrapper
+export default SidebarWrapper

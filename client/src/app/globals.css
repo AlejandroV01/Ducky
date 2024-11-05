@@ -76,3 +76,7 @@
 .input-border {
   @apply border border-[#d0d8e0] border-[1.6px];
 }
+
+.svh-minus-nav {
+  @apply h-[calc(100svh-68px)];
+}

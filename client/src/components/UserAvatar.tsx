@@ -1,9 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 import { useAppSelector } from '@/store/hooks'
 import React, { useEffect, useState } from 'react'
-import { Avatar } from './ui/avatar'
-const UserAvatar = () => {
-  const userName = useAppSelector(state => state.auth.user_name)
+import { Avatar, AvatarImage } from './ui/avatar'
+
+interface UserAvatarProps {
+  size?: number
+  username?: string
+}
+
+const UserAvatar: React.FC<UserAvatarProps> = ({ size, username }) => {
+  const defaultUserName = useAppSelector(state => state.auth.user_name)
+  const userName = username || defaultUserName
   const [avatarUrl, setAvatarUrl] = useState<string>('https://placehold.co/100')
 
   useEffect(() => {
@@ -25,8 +32,8 @@ const UserAvatar = () => {
   }, [userName])
 
   return (
-    <Avatar>
-      <img src={avatarUrl} alt={`${userName}'s avatar`} className='w-full h-full object-cover' />
+    <Avatar className={`w-full ${size ? '' : 'h-full'} rounded-full border border-foreground`} style={size ? { width: size, height: size } : {}}>
+      <AvatarImage src={avatarUrl} alt={`${userName}'s avatar`} className='w-full h-full object-cover rounded-full' />
     </Avatar>
   )
 }

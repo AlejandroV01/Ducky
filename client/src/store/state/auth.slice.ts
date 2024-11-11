@@ -57,8 +57,11 @@ export const signIn = createAsyncThunk(
   async (data: SignInData, { dispatch, rejectWithValue }) => {
     try {
       console.log(data)
-      const response = await api.auth.signIn(data)      
+      const response = await api.auth.signIn(data)
+      console.log('RESPONSE',response)
+      console.log('SET USER',response.data.user)
       dispatch(setUser(response.data.user))
+      console.log("SET ACCESS TOKEN", response.data.access_token)
       dispatch(setSession(response.data.access_token))
       return response.data.message
     } catch (error) {
@@ -87,7 +90,8 @@ export const refreshSession = createAsyncThunk(
       try {
           const access_token = localStorage.getItem('access_token')
           if (!access_token) {
-              return
+            dispatch(clearSession())
+            return
           }
           const response = await api.auth.refreshSession()
           dispatch(setUser(response.data.user))
@@ -123,8 +127,8 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setSession: (state, action) => {
-      state.access_token = action.payload.access_token
-      localStorage.setItem('access_token', action.payload.access_token)
+      state.access_token = action.payload
+      localStorage.setItem('access_token', action.payload)
       state.isAuthenticated = true
       state.needsVerification = false
     },

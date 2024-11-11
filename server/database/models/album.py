@@ -9,4 +9,4 @@ class Album(BaseModel):
     admin_id: UUID  # foreign key : user table
 
     class Config:
-        orm_mode = True
+        from_attributes = True

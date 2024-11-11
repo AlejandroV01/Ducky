@@ -10,4 +10,4 @@ class Photo(BaseModel):
     album_id: UUID  # foreign key : album table
 
     class Config:
-        orm_mode = True
+        from_attributes = True

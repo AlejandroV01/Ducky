@@ -1,47 +1,36 @@
-from fastapi import APIRouter
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from uuid import UUID
+
+from fastapi import APIRouter, HTTPException
+from database.models import Album
+from database.supabase_service import SupabaseService
 from datetime import datetime
-from supabase import create_client, Client
-from dotenv import load_dotenv
-import os
+from .schemas import *
+from utils import response_generator
+import uuid
 
-load_dotenv() # loads env variables from .env
+router = APIRouter(
+    prefix = "/albums",
+    tags = ["albums"],
+    response = {404: {"description": "Not found"}},
+)
 
-url: str = os.getenv("SUPABASE_URL")
-key: str = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+db = SupabaseService("album")
 
-router = APIRouter()
+@router.post("/album")
+async def add_album(data : AlbumCreate):
 
-class AlbumCreate(BaseModel):
-    title: str
-    admin_id: UUID
+    new_album = Album(
+        **data.model_dump(),
+        id = uuid.uuid4(),
+        created_on = datetime.now(),
+    )
 
-    class Config:
-        orm_mode = True
+    response = db.save(new_album)
 
-class Album(BaseModel):
-    id: UUID
-    title: str
-    created_at: datetime
-    admin_id: UUID  # foreign key : user table
-
-    class Config:
-        orm_mode = True
-
-@router.post("/album", tags=["album"])
-async def create_album(album : AlbumCreate):
-
-    data = {
-        "title": album.title,
-        "admin_id": str(album.admin_id)
-    }
-
-    supabase.table("album").insert(data).execute()
-
-    return album
+    if response.data:
+        saved_album = response.data[0]
+        return response_generator.generate_response(response.data,status=200)
+    else:
+        raise HTTPException(status_code=404, detail="Album not created")
 
 @router.get("/album/{album_id}", tags=["album"])
 async def get_album_by_id(album_id : UUID):
@@ -85,5 +74,3 @@ def delete_album_by_id(album_id : UUID):
         return {"error": error_message}
     
     return "Album successfully deleted"
-
-# create_album(AlbumCreate(title="Bronny.Pics", admin_id=UUID("1b5117df-888a-42af-8f17-01e55bfee088")))

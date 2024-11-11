@@ -57,6 +57,17 @@ def get_albums_by_userid(user_id:str):
     else:
         response_generator.generate_response(error="Albums not found", status=404)
 
+@router.put("/{id}")
+def update_album_info(id: str, data:AlbumCreate):
+    
+    response = db.update(id, data)
+    
+    if response.data:
+        updated_user = response.data[0]
+        return response_generator.generate_response(updated_user, status=200)
+    else:
+        return response_generator.generate_response(error="User not updated", status=404)
+
 @router.delete("/{id}")
 def delete_album(id: str):
     response = db.delete(id)
@@ -64,3 +75,4 @@ def delete_album(id: str):
         return response_generator.generate_response(response.data, status=200)
     else:
         return response_generator.generate_response(error="Album not deleted", status=404)
+    

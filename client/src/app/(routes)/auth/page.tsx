@@ -77,11 +77,11 @@ export default function Auth() {
   const { isFormLoading, isVerifying, error, needsVerification, isAuthenticated } = useAppSelector((state) => state.auth)
   const [email, setEmail] = useState('')
 
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     router.push('/')
-  //   }
-  // }, [isAuthenticated, router])
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/')
+    }
+  }, [isAuthenticated, router])
 
   const signUpForm = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),

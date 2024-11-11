@@ -207,6 +207,8 @@ def verify_code(data: VerifyCodeRequest, response: Response):
         verification_db.delete(verification_attempt["id"])
         pending_user_db.delete(pending_user_data["id"])
 
+        print((tokens["access_token"], user_data))
+
         '''
         # Send welcome email
         send_welcome_email(new_user.email, new_user.user_name)

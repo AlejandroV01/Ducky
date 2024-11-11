@@ -4,11 +4,11 @@ import { useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-const REDIRECT_URI = 'http://localhost:3000/auth/google/callback'
+const REDIRECT_URL = process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL
 
 export default function GoogleSignInButton() {
   const handleGoogleSignIn = useCallback(() => {
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email+profile&prompt=select_account`
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URL}&response_type=code&scope=email+profile&prompt=select_account`
     window.location.href = googleAuthUrl
   }, [])
 

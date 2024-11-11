@@ -57,16 +57,11 @@ export const signIn = createAsyncThunk(
   async (data: SignInData, { dispatch, rejectWithValue }) => {
     try {
       console.log(data)
-      const response = await api.auth.signIn(data)
-      console.log("step 1", response)
-      console.log("step 2", response.data.message)
-      console.log("step 3", response.data.user)
-      console.log("step 4", response.data.access_token)
+      const response = await api.auth.signIn(data)      
       dispatch(setUser(response.data.user))
       dispatch(setSession(response.data.access_token))
       return response.data.message
     } catch (error) {
-
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign in')
     }
   }

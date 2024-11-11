@@ -396,6 +396,7 @@ async def google_callback(request: GoogleCallbackRequest, response: Response):
 
         print("THE USER WITHOUT PASSWORD", user)
         print("THE TOKENS", tokens)
+        print("ACCESS TOKEN", tokens["access_token"])
 
         # return access token and user data
         return generate_response(

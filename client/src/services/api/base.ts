@@ -12,7 +12,8 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
   const data = await response.json()
 
-  if (!response.ok) {
+  // if there is an error from the backend, display it, throw it to our redux thunk
+  if (data.error) {
     throw new Error(data.error || 'An error occurred')
   }
 

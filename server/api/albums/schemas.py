@@ -1,12 +1,13 @@
 from pydantic import BaseModel
-import uuid
+from uuid import UUID
+from datetime import datetime
 
 class AlbumCreate(BaseModel):
     title: str
     admin_id: UUID
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Album(BaseModel):
     id: UUID
@@ -15,4 +16,4 @@ class Album(BaseModel):
     admin_id: UUID  # foreign key : user table
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, HTTPException
 from database.models import Album
 from database.supabase_service import SupabaseService
@@ -8,69 +7,60 @@ from utils import response_generator
 import uuid
 
 router = APIRouter(
-    prefix = "/albums",
-    tags = ["albums"],
-    response = {404: {"description": "Not found"}},
+    prefix="/albums",
+    tags=["albums"],
+    responses={404: {"description": "Not found"}},  # Use `responses` instead of `response`
 )
 
 db = SupabaseService("album")
 
-@router.post("/album")
-async def add_album(data : AlbumCreate):
-
+@router.post("/")
+def add_album(data: AlbumCreate):
     new_album = Album(
         **data.model_dump(),
-        id = uuid.uuid4(),
-        created_on = datetime.now(),
+        id=uuid.uuid4(),
+        created_on=datetime.now(),
     )
 
     response = db.save(new_album)
 
     if response.data:
         saved_album = response.data[0]
-        return response_generator.generate_response(response.data,status=200)
+        return response_generator.generate_response(response.data, status=200)
     else:
         raise HTTPException(status_code=404, detail="Album not created")
 
-@router.get("/album/{album_id}", tags=["album"])
-async def get_album_by_id(album_id : UUID):
+@router.get("/")
+def get_all():
+    response = db.get_all()
+    if response.data:
+        return response_generator.generate_response(response.data, status=200)
+    else:
+        return response_generator.generate_response(error="No albums found", status=404)
 
-    try:
-        response = supabase.from_("album").select("*").eq("id",str(album_id)).execute()
+@router.get("/{id}")
+def get_album_by_id(id: str):
+    response = db.get_by_id(id)
 
-        if not response.data:
-            return {"error": "Album not found"}
-        
-    except Exception as e:
-        error_message = f"An error occurred: {str(e)}"
-        print(error_message)
-        return {"error": error_message}
+    if response.data:
+        return response_generator.generate_response(response.data, status=200)
+    else:
+        return response_generator.generate_response(error="Album not found", status=404)
 
-    return response
+@router.get("/{user_id}")
+def get_albums_by_userid(user_id:str):
 
-@router.put("/album/update-name-by-id", tags = ["album"])
-def update_album_name(album_id : UUID, album_name : str):
-
-    try:
-        response = supabase.from_("album").update({"title": album_name}).eq("id", str(album_id)).execute()
-    except Exception as e:
-
-        print(e)
-
-        return {"error": e}
+    response = db.get_by_field("admin_id", str(user_id))
     
-    return response
+    if response.data:
+        return response_generator.generate_response(response.data, status=200)
+    else:
+        response_generator.generate_response(error="Albums not found", status=404)
 
-
-@router.delete("/album/delete", tags=["album"])
-def delete_album_by_id(album_id : UUID):
-
-    try:
-        supabase.from_("album").delete().eq("id", str(album_id)).execute()
-        
-    except Exception as e:
-        error_message = f"An error occurred: {str(e)}"
-        print(error_message)
-        return {"error": error_message}
-    
-    return "Album successfully deleted"
+@router.delete("/{id}")
+def delete_album(id: str):
+    response = db.delete(id)
+    if response.data:
+        return response_generator.generate_response(response.data, status=200)
+    else:
+        return response_generator.generate_response(error="Album not deleted", status=404)

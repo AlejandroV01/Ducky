@@ -1,22 +1,24 @@
+'use client'
+
+import { useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import React from 'react'
 
-type GoogleButtonProps = {
-  onPoke: () => void
-  text: string
-  pixelWidth: number
-  pixelHeight: number
-}
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+const REDIRECT_URI = 'http://localhost:3000/auth/google/callback'
 
-export default function GoogleButton({ onPoke, text, pixelWidth, pixelHeight }: GoogleButtonProps) {
+export default function GoogleSignInButton() {
+  const handleGoogleSignIn = useCallback(() => {
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email+profile&prompt=select_account`
+    window.location.href = googleAuthUrl
+  }, [])
+
   return (
-    <Button
-      onClick={onPoke}
+    <Button 
       type='button'
-      className={`flex items-center justify-center bg-foreground text-background font-semibold`}
-      style={{ width: `${pixelWidth}px`, height: `${pixelHeight}px` }}
+      onClick={handleGoogleSignIn}
+      className="flex items-center justify-center gap-2 bg-foreground text-background font-semibold w-[157px] h-[46px]"
     >
-      <svg className='w-5 h-5 mr-2' viewBox='0 0 24 24' aria-hidden='true'>
+      <svg className='w-5 h-5' viewBox='0 0 24 24' aria-hidden='true'>
         <path
           fill='currentColor'
           d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z'
@@ -34,7 +36,7 @@ export default function GoogleButton({ onPoke, text, pixelWidth, pixelHeight }: 
           d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'
         />
       </svg>
-      <span>{text}</span>
+      Google
     </Button>
   )
 }

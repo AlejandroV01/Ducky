@@ -8,7 +8,7 @@ import Logo from './Logo'
 import { ModeToggle } from './ModeToggle'
 import UserAvatar from './UserAvatar'
 const Sidebar = () => {
-  const user = useAppSelector(state => state.auth)
+  const { user } = useAppSelector(state => state.user)
   const sidebarItems = [
     { icon: <Home />, name: 'Home', path: '/' },
     { icon: <Search />, name: 'Search', path: '/search' },

@@ -9,9 +9,9 @@ const SidebarWrapper = () => {
   const excludedRoutes = ['/auth']
 
   const pathname = usePathname()
-  const isLoggedIn = useAppSelector(state => state.auth.user_name) !== ''
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
 
-  if (excludedRoutes.includes(pathname) || !isLoggedIn) {
+  if (excludedRoutes.includes(pathname) || !isAuthenticated) {
     return null
   }
 

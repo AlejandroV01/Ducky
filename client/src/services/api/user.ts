@@ -9,21 +9,41 @@ export const userApi = {
       },
     }),
 
-  updateProfile: (token: string, data: Partial<User>) =>
-    fetchApi('/users/me', {
-      method: 'PUT',
+  getAllUsers: (token: string) => 
+    fetchApi('/users/', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  getPaginatedUsers: (token: string, page: number, limit: number) => 
+    fetchApi(`/users/?page=${page}&limit=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  getUserById: (token: string, id: string) => 
+    fetchApi(`/users/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  updateUser: (token: string, id:string, data: Partial<User>) =>
+    fetchApi(`/users/${id}`, {
+      method: 'PATCH',
       headers: {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     }),
 
-  updatePassword: (token: string, data: { current_password: string, new_password: string }) =>
-    fetchApi('/users/me/password', {
-      method: 'PUT',
+  deleteUser: (token: string, id: string) =>
+    fetchApi(`/users/${id}`, {
+      method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(data),
     }),
 }

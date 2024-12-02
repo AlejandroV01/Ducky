@@ -29,6 +29,19 @@ class SupabaseService:
         """
         return supabase.table(self.table).select("*").execute()
     
+    # get_paginated(10, 0) -> get 10 items starting from the first item
+    # get_paginated(10, 10) -> get 10 items starting from the 11th item
+    # get_paginated(10, 20) -> get 10 items starting from the 21st item
+    def get_paginated(self, limit:int, offset:int):
+        """
+        Get paginated data from a table
+        - **param** limit: the number of items to get
+        - **param** offset: the number of items to skip
+        - **example** .get_paginated(10, 0)
+        - **returns** data=[{key: value, ...}, {}, {}, ...]
+        """
+        return supabase.table(self.table).select("*").limit(limit).offset(offset).execute()
+    
     def get_by_id(self, id):
         """
         Get data from a table by id

@@ -19,6 +19,10 @@ user_db = SupabaseService("user")
 """
 Send new verification code to email
 - **returns**: verification code via email
+ex. request
+{
+    "email": ""
+}
 """
 @router.post("/resend")
 def resend_verification(data: CreateVerificationRequest):
@@ -99,6 +103,11 @@ def resend_verification(data: CreateVerificationRequest):
 """
 Verify email with code to email
 - **returns**: access token and user data in body, refresh token in cookie
+ex. request
+{
+    "email": "
+    "code": "123456"
+}
 """
 @router.post("/verify")
 def verify_code(data: VerifyCodeRequest, response: Response):

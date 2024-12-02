@@ -26,9 +26,9 @@ user_db = SupabaseService("user")
 pending_user_db = SupabaseService("pending_user")
 verification_db = SupabaseService("verification_attempt")
 
-"""
+'''
 test route
-"""
+'''
 @router.post("/test")
 def test():
     user = user_db.get_by_id("6536362c-5c9e-4193-bc9b-ba5a7ad91f75").data[0]
@@ -46,7 +46,16 @@ def test():
     new_user.pop('password', None)
     return generate_response(data={"message": "Hello World!", "user": new_user}, status=200)
 
-
+'''
+ex. request
+{
+    "email": "",
+    "password": "",
+    "first_name": "",
+    "last_name": "",
+    "user_name": ""
+}
+'''
 @router.post("/signup")
 def signup(data: SignUpRequest):
     try:
@@ -123,6 +132,13 @@ def signup(data: SignUpRequest):
         return generate_response(error=str(e), status=500)
 
 
+'''
+ex. request
+{
+    "email": "",
+    "password": ""
+}
+'''
 @router.post("/signin")
 def signin(request: SignInRequest, response: Response):
     try:
@@ -208,6 +224,10 @@ def signin(request: SignInRequest, response: Response):
         return generate_response(error=str(e), status=500)
 
 
+'''
+ex. request, have a refresh token cookie set
+credentials = True
+'''
 @router.post("/signout")
 def signout(response: Response):
     try:
@@ -229,7 +249,10 @@ def signout(response: Response):
     except Exception as e:
         return generate_response(error=str(e), status=500) # refresh token extends current user session
 
-
+'''
+ex. request
+credentials = True
+'''
 @router.post("/refresh")
 def refresh_session(response: Response, request: Request):
     try:
@@ -312,6 +335,12 @@ def refresh_session(response: Response, request: Request):
         )
 
 
+'''
+ex. request
+{
+    "code": ""
+}
+'''
 @router.post("/google/callback")
 async def google_callback(request: GoogleCallbackRequest, response: Response):
     try:

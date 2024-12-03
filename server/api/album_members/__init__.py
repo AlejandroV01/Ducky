@@ -1,0 +1,1 @@
+from .album_member_router import router as album_member_router

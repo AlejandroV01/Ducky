@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { removeProfile } from '@/store/auth/auth.slice'
+import { signOut } from '@/store/state/auth.slice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { LogOut, Plus } from 'lucide-react'
 import Link from 'next/link'
@@ -18,14 +18,15 @@ import {
 } from './ui/dropdown-menu'
 import UserAvatar from './UserAvatar'
 const Navbar = () => {
-  const username = useAppSelector(state => state.auth.user_name)
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
+  const { user } = useAppSelector((state) => state.user)
   const dispatch = useAppDispatch()
   const router = useRouter()
   const handleSignOut = () => {
-    dispatch(removeProfile())
+    dispatch(signOut())
     router.push('/')
   }
-  const isSignedIn = !!username
+  const isSignedIn = !!isAuthenticated
   return (
     <nav className='w-full py-4 bg-background flex items-center justify-between relative shadow-[0px_0px_10px_0px_#0a0a0a6f] dark:shadow-[0px_0px_10px_0px_#ffffff28] px-20'>
       <div />
@@ -48,7 +49,7 @@ const Navbar = () => {
               <DropdownMenuContent>
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <Link href={`/profile/${username}`} className='hover:cursor-pointer'>
+                <Link href={`/profile/${user.user_name}`} className='hover:cursor-pointer'>
                   <DropdownMenuItem className='hover:cursor-pointer'>Profile</DropdownMenuItem>
                 </Link>
                 <DropdownMenuItem className='flex items-center gap-1 hover:cursor-pointer' onClick={handleSignOut}>

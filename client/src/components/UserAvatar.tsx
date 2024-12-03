@@ -8,14 +8,15 @@ interface UserAvatarProps {
   username?: string
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({ size, username }) => {
-  const defaultUserName = useAppSelector(state => state.auth.user_name)
-  const userName = username || defaultUserName
+const UserAvatar: React.FC<UserAvatarProps> = ({ size }) => {
+  const { user } = useAppSelector(state => state.user)
   const [avatarUrl, setAvatarUrl] = useState<string>('https://placehold.co/100')
 
   useEffect(() => {
-    if (userName) {
-      const imageUrl = `https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=${userName}&backgroundColor=ffffff,ffdfbf,c0aede,d1d4f9,ffd5dc,b6e3f4`
+    if (user.icon_url) {
+      setAvatarUrl(user.icon_url)
+    } else {
+      const imageUrl = `https://api.dicebear.com/9.x/lorelei-neutral/svg?seed=${user.icon_url}&backgroundColor=ffffff,ffdfbf,c0aede,d1d4f9,ffd5dc,b6e3f4`
 
       fetch(imageUrl)
         .then(response => {
@@ -29,11 +30,11 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ size, username }) => {
           setAvatarUrl('https://placehold.co/100')
         })
     }
-  }, [userName])
+  }, [user.icon_url])
 
   return (
     <Avatar className={`w-full ${size ? '' : 'h-full'} rounded-full border border-foreground`} style={size ? { width: size, height: size } : {}}>
-      <AvatarImage src={avatarUrl} alt={`${userName}'s avatar`} className='w-full h-full object-cover rounded-full' />
+      <AvatarImage src={avatarUrl} alt={`${user.user_name}'s avatar`} className='w-full h-full object-cover rounded-full' />
     </Avatar>
   )
 }

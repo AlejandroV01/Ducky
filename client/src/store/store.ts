@@ -1,10 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import authReducer from './auth/auth.slice'
+import authReducer from './state/auth.slice'
+import userReducer from './state/user.slice'
+import albumReducer from './state/album.slice'
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       auth: authReducer,
+      user: userReducer,
+      album: albumReducer,
     },
   })
 }

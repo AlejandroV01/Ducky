@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import StoreProvider from '@/store/StoreProvider'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import { SessionInitializer } from '@/components/SessionInitializer'
 import './globals.css'
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang='en'>
       <StoreProvider>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <SessionInitializer />
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
             <div className='flex flex-col items-center w-full'>
               <NavWrapper />

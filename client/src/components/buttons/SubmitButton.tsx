@@ -5,9 +5,10 @@ type SubmitButtonProps = {
   text: string
   pixelWidth: number
   pixelHeight: number
+  isLoading: boolean
 }
 
-export default function SubmitButton({ text, pixelWidth, pixelHeight }: SubmitButtonProps) {
+export default function SubmitButton({ text, pixelWidth, pixelHeight, isLoading }: SubmitButtonProps) {
   return (
     <Button 
       type="submit" 
@@ -18,6 +19,7 @@ export default function SubmitButton({ text, pixelWidth, pixelHeight }: SubmitBu
         border: 'none',
         outline: 'none'
       }}
+      disabled={isLoading}
     >
       {text}
     </Button>

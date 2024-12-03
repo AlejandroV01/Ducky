@@ -1,6 +1,6 @@
 // services/api/album.ts
 import { fetchApi } from './base'
-import { Album, AlbumMember } from '@/types/db'
+import { Album } from '@/types/db'
 
 export const albumApi = {
   // Album CRUD
@@ -59,39 +59,6 @@ export const albumApi = {
 
   deleteAlbum: (token: string, albumId: string) =>
     fetchApi(`/albums/${albumId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-
-  // Members
-  joinAlbum: (token: string, albumId: string) =>
-    fetchApi(`/albums/${albumId}/members/join`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-
-  getAlbumMembers: (token: string, albumId: string, page: number = 1, pageSize: number = 20) =>
-    fetchApi(`/albums/${albumId}/members?page=${page}&page_size=${pageSize}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-
-  updateMemberRole: (token: string, albumId: string, userId: string, role: string) =>
-    fetchApi(`/albums/${albumId}/members/${userId}/role`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ role }),
-    }),
-
-  removeMember: (token: string, albumId: string, userId: string) =>
-    fetchApi(`/albums/${albumId}/members/${userId}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,

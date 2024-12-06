@@ -1,22 +1,24 @@
 'use client'
 
-import { useCallback } from 'react'
 import { Button } from '@/components/ui/button'
+import { useCallback } from 'react'
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
 const REDIRECT_URL = process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URL
 
 export default function GoogleSignInButton() {
   const handleGoogleSignIn = useCallback(() => {
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URL}&response_type=code&scope=email+profile&prompt=select_account`
-    window.location.href = googleAuthUrl
+    if (typeof window !== 'undefined') {
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URL}&response_type=code&scope=email+profile&prompt=select_account`
+      window.location.href = googleAuthUrl
+    }
   }, [])
 
   return (
-    <Button 
+    <Button
       type='button'
       onClick={handleGoogleSignIn}
-      className="flex items-center justify-center gap-2 bg-foreground text-background font-semibold w-[157px] h-[46px]"
+      className='flex items-center justify-center gap-2 bg-foreground text-background font-semibold w-[157px] h-[46px]'
     >
       <svg className='w-5 h-5' viewBox='0 0 24 24' aria-hidden='true'>
         <path

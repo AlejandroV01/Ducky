@@ -6,25 +6,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton'
 import { default as UserAvatar } from '@/components/UserAvatar'
 import { supabase } from '@/lib/supabaseClient'
-import { AlbumMemberUser } from '@/types/auth'
 import { Album, User } from '@/types/db'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-const images = Array.from({ length: 7 }, (_, i) => `/images/Portrait${i + 1}.svg`)
-
 interface MemberDataFormat {
-  role: 'owner' | 'admin' | 'contributor' | 'viewer'
-  user: object
+  role: string
+  user: {
+    id: string
+    user_name: string
+    email: string
+    icon_url?: string
+  }
 }
 const AlbumPage = () => {
   const params = useParams()
   const userName = params.userName as string
   const albumTitle = decodeURIComponent(params.albumTitle as string)
-  const albumAdminUser = 'peterparker'
-  const albumId = '2d91645d-dd06-4119-8bf3-4ebfe79aaa6f'
   const [currentAlbum, setCurrentAlbum] = useState<Album>()
   const [members, setMembers] = useState<MemberDataFormat[]>([])
   const [errorLoadingAlbum, setErrorLoadingAlbum] = useState(false)
@@ -84,7 +84,17 @@ const AlbumPage = () => {
       throw error
     }
     console.log('Album members:', data)
-    setMembers(data as MemberDataFormat[])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formattedData = data.map((member: any) => ({
+      role: member.role,
+      user: {
+        id: member.user.id,
+        user_name: member.user.user_name,
+        email: member.user.email,
+        icon_url: member.user.icon_url,
+      },
+    }))
+    setMembers(formattedData as MemberDataFormat[])
     return data
   }
 
@@ -189,7 +199,7 @@ const AlbumPage = () => {
                   {albumTitle} Members ({members.length})
                 </DialogTitle>
               </DialogHeader>
-              {members.map((member: AlbumMemberUser, index) => {
+              {members.map((member: MemberDataFormat, index) => {
                 if (members.length === 0) return <DialogDescription key={index}>No members</DialogDescription>
                 return (
                   <div key={index} className='flex items-center gap-2 justify-between'>

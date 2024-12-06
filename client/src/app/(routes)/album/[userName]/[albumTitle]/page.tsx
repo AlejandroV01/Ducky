@@ -12,8 +12,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
 const images = Array.from({ length: 7 }, (_, i) => `/images/Portrait${i + 1}.svg`)
 
+interface MemberDataFormat {
+  role: 'owner' | 'admin' | 'contributor' | 'viewer'
+  user: object
+}
 const AlbumPage = () => {
   const params = useParams()
   const userName = params.userName as string
@@ -21,7 +26,7 @@ const AlbumPage = () => {
   const albumAdminUser = 'peterparker'
   const albumId = '2d91645d-dd06-4119-8bf3-4ebfe79aaa6f'
   const [currentAlbum, setCurrentAlbum] = useState<Album>()
-  const [members, setMembers] = useState<AlbumMemberUser[]>([])
+  const [members, setMembers] = useState<MemberDataFormat[]>([])
   const [errorLoadingAlbum, setErrorLoadingAlbum] = useState(false)
   const [sortOrder, setSortOrder] = useState<'oldest' | 'newest'>('newest')
   const [loadingImages, setLoadingImages] = useState(true)
@@ -78,8 +83,8 @@ const AlbumPage = () => {
       setErrorLoadingAlbum(true)
       throw error
     }
-
-    setMembers(data as AlbumMemberUser[])
+    console.log('Album members:', data)
+    setMembers(data as MemberDataFormat[])
     return data
   }
 

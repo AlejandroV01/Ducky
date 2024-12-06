@@ -1,4 +1,8 @@
+//import NavWrapper from '@/components/NavWrapper' // Import the new NavWrapper component
+import { SessionInitializer } from '@/components/SessionInitializer'
+import SidebarWrapper from '@/components/SidebarWrapper'
 import { ThemeProvider } from '@/components/theme-provider'
+import StoreProvider from '@/store/StoreProvider'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
@@ -7,6 +11,7 @@ const geistSans = localFont({
   variable: '--font-geist-sans',
   weight: '100 900',
 })
+
 const geistMono = localFont({
   src: './fonts/GeistMonoVF.woff',
   variable: '--font-geist-mono',
@@ -25,11 +30,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
-      </body>
+      <StoreProvider>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <SessionInitializer />
+          <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+            <div className='flex flex-col items-center w-full'>
+              {/* <NavWrapper /> */}
+              <div className='flex w-full'>
+                <SidebarWrapper />
+                {children}
+              </div>
+            </div>
+          </ThemeProvider>
+        </body>
+      </StoreProvider>
     </html>
   )
 }

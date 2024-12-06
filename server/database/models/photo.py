@@ -1,13 +1,20 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
+from typing import Optional, List
 
 class Photo(BaseModel):
     id: UUID
+    album_id: UUID
+    user_id: UUID
     url: str
-    caption: str
-    created_at: datetime
-    album_id: UUID  # foreign key : album table
+    storage_path: str
+    file_name: str
+    description: Optional[str] = None
+    taken_at: Optional[datetime] = None
+    uploaded_at: datetime
+    size: Optional[int] = None
+    mime_type: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

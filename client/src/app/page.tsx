@@ -1,59 +1,59 @@
 'use client'
-import { ModeToggle } from '@/components/ModeToggle'
-import { Button } from '@/components/ui/button'
-import { Loader } from 'lucide-react'
-import { useState } from 'react'
-export default function Home() {
-  const [isLoading, setIsLoading] = useState(false)
+import PageWrapper from '@/components/PageWrapper'
+import { Post } from '@/components/Post/Post'
+import { Skeleton } from '@/components/ui/skeleton'
+import { supabase } from '@/lib/supabaseClient'
+import { Album } from '@/types/db'
+import { useEffect, useState } from 'react'
 
-  const handleGet = async () => {
-    setIsLoading(true)
+export default function Home() {
+  const [albums, setAlbums] = useState<Album[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchAlbums = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/user', { method: 'GET' })
-      if (!res.ok) throw new Error('Failed to fetch')
-      console.log(await res.json())
-    } catch (err) {
-      console.error(err)
+      const { data, error } = await supabase.from('album').select('*').order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching albums:', error)
+        return
+      }
+
+      setAlbums(data as Album[])
+    } catch (error) {
+      console.error('Unexpected error fetching albums:', error)
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
-  const handleInsert = async () => {
-    setIsLoading(true)
-    const newUser = {
-      first_name: 'Lebron',
-      last_name: 'James',
-    }
-    try {
-      const res = await fetch('http://127.0.0.1:8000/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // Add this line
-        },
-        body: JSON.stringify(newUser),
-      })
-      if (!res.ok) throw new Error('Failed to fetch')
-      console.log(await res.json())
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setIsLoading(false)
-    }
+  useEffect(() => {
+    fetchAlbums()
+  }, [])
+
+  if (loading) {
+    return (
+      <PageWrapper className='gap-8'>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Skeleton key={index} className='w-[550px] h-[543px]' />
+        ))}
+      </PageWrapper>
+    )
+  }
+
+  if (albums.length === 0) {
+    return (
+      <PageWrapper className='gap-8'>
+        <p>No albums found.</p>
+      </PageWrapper>
+    )
   }
 
   return (
-    <div className='flex flex-col items-center gap-10'>
-      <h1 className='text-yellow-600 text-3xl font-bold text-center'>Welcome to Ducky</h1>
-      <ModeToggle />
-      <Button className='flex items-center justify-center gap-1' onClick={handleGet} disabled={isLoading}>
-        <span>Get Users</span>
-        {isLoading && <Loader className='animate-spin' size={16} />}
-      </Button>
-      <Button className='flex items-center justify-center gap-1' onClick={handleInsert} disabled={isLoading}>
-        <span>Insert Users</span>
-        {isLoading && <Loader className='animate-spin' size={16} />}
-      </Button>
-    </div>
+    <PageWrapper className='gap-8'>
+      {albums.map(album => (
+        <Post key={album.id} albumData={album} />
+      ))}
+    </PageWrapper>
   )
 }

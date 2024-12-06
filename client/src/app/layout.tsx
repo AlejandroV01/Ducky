@@ -1,10 +1,10 @@
-import NavWrapper from '@/components/NavWrapper' // Import the new NavWrapper component
+//import NavWrapper from '@/components/NavWrapper' // Import the new NavWrapper component
+import { SessionInitializer } from '@/components/SessionInitializer'
 import SidebarWrapper from '@/components/SidebarWrapper'
 import { ThemeProvider } from '@/components/theme-provider'
 import StoreProvider from '@/store/StoreProvider'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
-import { SessionInitializer } from '@/components/SessionInitializer'
 import './globals.css'
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -35,7 +35,7 @@ export default function RootLayout({
           <SessionInitializer />
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
             <div className='flex flex-col items-center w-full'>
-              <NavWrapper />
+              {/* <NavWrapper /> */}
               <div className='flex w-full'>
                 <SidebarWrapper />
                 {children}

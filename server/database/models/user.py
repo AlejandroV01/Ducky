@@ -15,12 +15,13 @@ class User(BaseModel):
     first_name: str
     last_name: str
     user_name: str
-    icon_url: Optional[str]
+    icon_url: Optional[str] = None  # Default to None
     is_verified: Optional[bool] = False
-    auth_provider: Optional[AuthProvider]
-    last_login: Optional[datetime]
-    created_at: Optional[datetime]
-    login_attempts: Optional[int]
-    last_failed_login: Optional[datetime]
+    auth_provider: Optional[AuthProvider] = AuthProvider.email
+    last_login: Optional[datetime] = None
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    login_attempts: Optional[int] = 0
+    last_failed_login: Optional[datetime] = None
+
     class Config:
         from_attributes = True

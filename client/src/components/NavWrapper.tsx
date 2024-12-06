@@ -8,7 +8,7 @@ const NavWrapper = () => {
   const excludedRoutes = ['/auth']
 
   const pathname = usePathname()
-  const isLoggedIn = useAppSelector(state => state.auth.user_name) !== ''
+  const isLoggedIn = useAppSelector(state => state.user.user.user_name) !== ''
   if (excludedRoutes.includes(pathname) || isLoggedIn) {
     return null
   }

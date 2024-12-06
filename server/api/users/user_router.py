@@ -173,6 +173,9 @@ def update_user(
 "users/id"
 @router.delete("/{id}")
 def delete_user(id: str, auth_data: AuthData = Depends(verify_token)):
+    
+    
+
     """
     Delete user by ID. User can only delete their own account.
     Requires authentication and authorization (must be the same user).
@@ -199,5 +202,54 @@ def delete_user(id: str, auth_data: AuthData = Depends(verify_token)):
             data={"message": "User successfully deleted"},
             status=200
         )
+    except Exception as e:
+        return generate_response(error=str(e), status=500)
+    
+
+@router.get("/album/{album_id}/members")
+def get_album_members_with_roles(
+    album_id: str, 
+    auth_data: AuthData = Depends(verify_token)
+):
+    """
+    Get all users in an album who have a role that is not 'none'.
+    Requires authentication.
+    """
+    try:
+        # Fetch users with roles in the album
+        query = """
+            SELECT 
+                u.id, u.email, u.first_name, u.last_name, u.user_name, 
+                u.icon_url, u.is_verified, ar.role
+            FROM 
+                users AS u
+            INNER JOIN 
+                album_role AS ar 
+            ON 
+                u.id = ar.user_id
+            WHERE 
+                ar.album_id = %s AND ar.role != 'none'
+        """
+        response = db.execute_query(query, [album_id])
+        
+        if not response.data:
+            return generate_response(data=[], status=200)
+
+        # Exclude sensitive information and return
+        members = [
+            {
+                "id": user["id"],
+                "email": user["email"],
+                "first_name": user["first_name"],
+                "last_name": user["last_name"],
+                "user_name": user["user_name"],
+                "icon_url": user["icon_url"],
+                "is_verified": user["is_verified"],
+                "role": user["role"]
+            }
+            for user in response.data
+        ]
+        
+        return generate_response(data=members, status=200)
     except Exception as e:
         return generate_response(error=str(e), status=500)

@@ -1,7 +1,7 @@
-import { SignInData, SignUpData, VerificationData } from '@/types/auth'
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { setUser, clearUser } from '@/store/state/user.slice'
 import { api } from '@/services/api/index'
+import { clearUser, setUser } from '@/store/state/user.slice'
+import { SignInData, SignUpData, VerificationData } from '@/types/auth'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 interface AuthState {
   access_token: string | null
@@ -22,105 +22,89 @@ const initialState: AuthState = {
   needsVerification: null,
   isAuthenticated: false,
   message: null, // if you want to get the backend messages
-  error: null // for unexpected errors
+  error: null, // for unexpected errors
 }
 
-export const signUp = createAsyncThunk(
-  'signUp',
-  async (data: SignUpData, { rejectWithValue }) => {
-    try {
-      console.log(data)
-      const response = await api.auth.signUp(data)
-      return response.data.message
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign up')
-    }
+export const signUp = createAsyncThunk('signUp', async (data: SignUpData, { rejectWithValue }) => {
+  try {
+    console.log(data)
+    const response = await api.auth.signUp(data)
+    console.log('SIGNUP RESPONSE', response)
+    return response.data.message
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign up')
   }
-)
+})
 
-export const verifyEmail = createAsyncThunk(
-  'verifyEmail',
-  async (data: VerificationData, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await api.auth.verifyEmail(data)
-      dispatch(setUser(response.data.user))
-      dispatch(setSession(response.data.access_token))
-      return response.data.message
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to verify email')
-    }
+export const verifyEmail = createAsyncThunk('verifyEmail', async (data: VerificationData, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await api.auth.verifyEmail(data)
+    dispatch(setUser(response.data.user))
+    dispatch(setSession(response.data.access_token))
+    return response.data.message
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : 'Failed to verify email')
   }
-)
+})
 
-export const signIn = createAsyncThunk(
-  'signIn',
-  async (data: SignInData, { dispatch, rejectWithValue }) => {
-    try {
-      console.log(data)
-      const response = await api.auth.signIn(data)
-      console.log('RESPONSE',response)
-      console.log('SET USER',response.data.user)
-      dispatch(setUser(response.data.user))
-      console.log("SET ACCESS TOKEN", response.data.access_token)
-      dispatch(setSession(response.data.access_token))
-      return response.data.message
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign in')
-    }
+export const signIn = createAsyncThunk('signIn', async (data: SignInData, { dispatch, rejectWithValue }) => {
+  try {
+    console.log('Sending Sign In Data:', data)
+    const response = await api.auth.signIn(data)
+    console.log('Received Response:', response.data)
+    dispatch(setUser(response.data.user))
+    return response.data
+  } catch (error) {
+    console.error('Sign In Error:', error)
+    console.log('Sign In Error with the following data:', data)
+    return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign in')
   }
-)
+})
 
-export const signOut = createAsyncThunk(
-  'signOut',
-  async (_, { dispatch, rejectWithValue }) => {
-    try {
-      await api.auth.signOut()
-      dispatch(clearUser())
+export const signOut = createAsyncThunk('signOut', async (_, { dispatch, rejectWithValue }) => {
+  try {
+    const res = await api.auth.signOut()
+    console.log('Sign Out Response:', res)
+    dispatch(clearUser())
+    console.log('Cleared User')
+    dispatch(clearSession())
+    console.log('Cleared Session')
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign out')
+  }
+})
+
+export const refreshSession = createAsyncThunk('refreshSession', async (_, { dispatch, rejectWithValue }) => {
+  try {
+    const access_token = localStorage.getItem('access_token')
+    if (!access_token) {
       dispatch(clearSession())
-    } catch (error) {
-
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign out')
+      return
     }
+    const response = await api.auth.refreshSession()
+    dispatch(setUser(response.data.user))
+    dispatch(setSession(response.data.access_token))
+    return response.data.message
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : 'An error occurred')
   }
-)
+})
 
-export const refreshSession = createAsyncThunk(
-  'refreshSession',
-  async (_, { dispatch, rejectWithValue }) => {
-      try {
-          const access_token = localStorage.getItem('access_token')
-          if (!access_token) {
-            dispatch(clearSession())
-            return
-          }
-          const response = await api.auth.refreshSession()
-          dispatch(setUser(response.data.user))
-          dispatch(setSession(response.data.access_token))
-          return response.data.message
-      } catch (error) {
-          return rejectWithValue(error instanceof Error ? error.message : 'An error occurred')
-      }
+export const googleCallback = createAsyncThunk('googleCallback', async (code: string, { dispatch, rejectWithValue }) => {
+  try {
+    console.log('THE CODE', code)
+    const response = await api.auth.googleCallback(code)
+    console.log('step 1', response)
+    console.log('step 2', response.data.message)
+    console.log('step 3', response.data.user)
+    console.log('step 4', response.data.access_token)
+    dispatch(setUser(response.data.user))
+    dispatch(setSession(response.data.access_token))
+    return response.data.message
+  } catch (error) {
+    return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign in with Google')
   }
-)
-
-export const googleCallback = createAsyncThunk(
-  'googleCallback',
-  async (code: string, { dispatch, rejectWithValue }) => {
-    try {
-      console.log("THE CODE",code)
-      const response = await api.auth.googleCallback(code)
-      console.log("step 1", response)
-      console.log("step 2", response.data.message)
-      console.log("step 3", response.data.user)
-      console.log("step 4", response.data.access_token)
-      dispatch(setUser(response.data.user))
-      dispatch(setSession(response.data.access_token))
-      return response.data.message
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to sign in with Google')
-    }
-  }
-)
+})
 
 const authSlice = createSlice({
   name: 'auth',
@@ -132,17 +116,16 @@ const authSlice = createSlice({
       state.isAuthenticated = true
       state.needsVerification = false
     },
-    clearSession: (state) => {
+    clearSession: state => {
       state.access_token = null
       localStorage.removeItem('access_token')
       state.isAuthenticated = false
       state.needsVerification = null
-    }
+    },
   },
-  extraReducers: (builder) => {
-
+  extraReducers: builder => {
     // Sign Up (doesn't create user, only pending user and verification)
-    builder.addCase(signUp.pending, (state) => {
+    builder.addCase(signUp.pending, state => {
       state.isFormLoading = true
       state.error = null
     })
@@ -157,7 +140,7 @@ const authSlice = createSlice({
     })
 
     // Verify Email (creates user and session on success)
-    builder.addCase(verifyEmail.pending, (state) => {
+    builder.addCase(verifyEmail.pending, state => {
       state.isVerifying = true
       state.error = null
     })
@@ -171,7 +154,7 @@ const authSlice = createSlice({
     })
 
     // Sign In
-    builder.addCase(signIn.pending, (state) => {
+    builder.addCase(signIn.pending, state => {
       state.isFormLoading = true
       state.isLoading = true
       state.error = null
@@ -188,11 +171,11 @@ const authSlice = createSlice({
     })
 
     // Sign Out
-    builder.addCase(signOut.pending, (state) => {
+    builder.addCase(signOut.pending, state => {
       state.isLoading = true
       state.error = null
     })
-    builder.addCase(signOut.fulfilled, (state) => {
+    builder.addCase(signOut.fulfilled, state => {
       state.isLoading = false
     })
     builder.addCase(signOut.rejected, (state, action) => {
@@ -201,7 +184,7 @@ const authSlice = createSlice({
     })
 
     // Refresh Session
-    builder.addCase(refreshSession.pending, (state) => {
+    builder.addCase(refreshSession.pending, state => {
       state.isLoading = true
       state.error = null
     })
@@ -209,12 +192,12 @@ const authSlice = createSlice({
       state.isLoading = false
       state.message = action.payload
     })
-    builder.addCase(refreshSession.rejected, (state) => {
+    builder.addCase(refreshSession.rejected, state => {
       state.isLoading = false
     })
 
     // Google Callback
-    builder.addCase(googleCallback.pending, (state) => {
+    builder.addCase(googleCallback.pending, state => {
       state.isLoading = true
       state.error = null
     })

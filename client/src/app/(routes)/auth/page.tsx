@@ -2,20 +2,20 @@
 'use client'
 import GoogleButton from '@/components/buttons/GoogleButton'
 import SubmitButton from '@/components/buttons/SubmitButton'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { signIn, signUp, verifyEmail } from '@/store/state/auth.slice'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import Showcase from './Showcase'
-
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { signUp, signIn, verifyEmail } from '@/store/state/auth.slice'
 
 // Design stuff
 // Page currently responsive up to 300px screen width
@@ -74,11 +74,13 @@ type VerificationFormValues = z.infer<typeof verificationSchema>
 export default function Auth() {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { isFormLoading, isVerifying, error, needsVerification, isAuthenticated } = useAppSelector((state) => state.auth)
+  const [showVerifyEmail, setShowVerifyEmail] = useState(false)
+  const { isFormLoading, isVerifying, error, needsVerification, isAuthenticated } = useAppSelector(state => state.auth)
   const [email, setEmail] = useState('')
-
+  const [goodSignup, setGoodSignup] = useState(false)
+  const user = useAppSelector(state => state.user.user)
   useEffect(() => {
-    if (isAuthenticated) {
+    if (user.user_name) {
       router.push('/')
     }
   }, [isAuthenticated, router])
@@ -114,6 +116,7 @@ export default function Auth() {
     try {
       setEmail(values.email)
       dispatch(signUp(values))
+      setGoodSignup(true)
     } catch (error) {
       console.error('Sign up failed:', error)
     }
@@ -121,11 +124,14 @@ export default function Auth() {
 
   const onVerifyEmail = (values: VerificationFormValues) => {
     try {
-      dispatch(verifyEmail({
-        email,
-        code: values.code,
-      }))
-
+      dispatch(
+        verifyEmail({
+          email,
+          code: values.code,
+        })
+      )
+      setShowVerifyEmail(false)
+      router.push('/')
     } catch (error) {
       console.error('Verification failed:', error)
     }
@@ -136,6 +142,7 @@ export default function Auth() {
     try {
       console.log('Sign In:', values)
       dispatch(signIn(values))
+      router.push('/')
     } catch (error) {
       console.error('Sign in failed:', error)
     }
@@ -169,7 +176,7 @@ export default function Auth() {
                 <CardTitle className='text-[#8B97A8] text-[17px]'>Create an account</CardTitle>
               </CardHeader>
               <CardContent>
-              { error && (<div className='text-red-600 text-lg'>{error}</div>)}
+                {error && <div className='text-red-600 text-lg'>{error}</div>}
                 <Form {...signUpForm}>
                   <form onSubmit={signUpForm.handleSubmit(onSignUpSubmit)}>
                     <div className='grid grid-cols-2 gap-4'>
@@ -247,13 +254,9 @@ export default function Auth() {
                         )}
                       />
                     </div>
+                    {goodSignup && <div className='text-green-600 text-lg'>Successfully signed up, go login now!</div>}
                     <div className='pt-[25px] flex flex-row justify-between max-[520px]:gap-4'>
-                      <SubmitButton 
-                        text={isFormLoading ? 'Loading...' : 'Sign Up'} 
-                        pixelWidth={172} 
-                        pixelHeight={46} 
-                        isLoading={isFormLoading}
-                      />
+                      <SubmitButton text={isFormLoading ? 'Loading...' : 'Sign Up'} isLoading={isFormLoading} />
                       <GoogleButton />
                     </div>
                   </form>
@@ -268,7 +271,7 @@ export default function Auth() {
                 <CardTitle className='text-[#8B97A8] text-[17px]'>Welcome back to Ducky</CardTitle>
               </CardHeader>
               <CardContent>
-              { error && (<div className='text-red-600 text-lg'>{error}</div>)}
+                {error && <div className='text-red-600 text-lg'>{error}</div>}
                 <Form {...signInForm}>
                   <form onSubmit={signInForm.handleSubmit(onSignInSubmit)}>
                     <div className='flex gap-[12px] flex-col'>
@@ -300,12 +303,7 @@ export default function Auth() {
                       />
                     </div>
                     <div className='pt-[25px] flex flex-row justify-between max-[520px]:gap-4'>
-                      <SubmitButton 
-                        text={isFormLoading ? 'Loading...' : 'Login'} 
-                        pixelWidth={172} 
-                        pixelHeight={46} 
-                        isLoading={isFormLoading}
-                      />
+                      <SubmitButton text={isFormLoading ? 'Loading...' : 'Login'} isLoading={isFormLoading} />
                       <GoogleButton />
                     </div>
                   </form>
@@ -315,10 +313,9 @@ export default function Auth() {
           </TabsContent>
         </Tabs>
       </div>
-      { /* Verify Email Popup after SignIn */ }
-      {needsVerification && (
+      {/* Verify Email Popup after SignIn */}
+      {showVerifyEmail && (
         <div className='fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center'>
-          { error && (<div className='text-red-600 text-lg'>{error}</div>)}
           <Card className='w-[400px]'>
             <CardHeader>
               <CardTitle>Verify Email</CardTitle>
@@ -333,22 +330,19 @@ export default function Auth() {
                       <FormItem>
                         <FormLabel>Verification Code</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder='Enter 6-digit code' 
-                            {...field} 
-                            maxLength={6}
-                          />
+                          <Input placeholder='Enter 6-digit code' {...field} maxLength={6} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <SubmitButton 
-                    text={isVerifying ? 'Verifying...' : 'Verify'} 
-                    pixelWidth={146} 
-                    pixelHeight={46} 
-                    isLoading={isVerifying}
-                  />
+                  {error && <div className='text-red-600 text-lg'>{error}</div>}
+                  <div className='w-full justify-between flex items-end'>
+                    <SubmitButton text={isVerifying ? 'Verifying...' : 'Verify'} isLoading={isVerifying} />
+                    <Button variant={'outline'} onClick={() => setShowVerifyEmail(false)}>
+                      Cancel
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </CardContent>

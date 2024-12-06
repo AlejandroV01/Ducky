@@ -1,87 +1,59 @@
 'use client'
 import PageWrapper from '@/components/PageWrapper'
 import { Post } from '@/components/Post/Post'
+import { Skeleton } from '@/components/ui/skeleton'
+import { supabase } from '@/lib/supabaseClient'
+import { Album } from '@/types/db'
+import { useEffect, useState } from 'react'
+
 export default function Home() {
-  // const [isLoading, setIsLoading] = useState(false)
+  const [albums, setAlbums] = useState<Album[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // const handleGet = async () => {
-  //   setIsLoading(true)
-  //   try {
-  //     const res = await fetch('http://127.0.0.1:8000/user', { method: 'GET' })
-  //     if (!res.ok) throw new Error('Failed to fetch')
-  //     console.log(await res.json())
-  //   } catch (err) {
-  //     console.error(err)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+  const fetchAlbums = async () => {
+    try {
+      const { data, error } = await supabase.from('album').select('*').order('created_at', { ascending: false })
 
-  // const handleCheckUser = async () => {
-  //   setIsLoading(true)
-  //   try {
-  //     const res = await fetch('http://127.0.0.1:8000/check-user', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ username: 'johndoe' }),
-  //     })
-  //     if (!res.ok) throw new Error('Failed to fetch')
-  //     console.log(await res.json())
-  //   } catch (err) {
-  //     console.error(err)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+      if (error) {
+        console.error('Error fetching albums:', error)
+        return
+      }
 
-  // const handleInsert = async () => {
-  //   setIsLoading(true)
-  //   const newUser = {
-  //     first_name: 'Lebron',
-  //     last_name: 'James',
-  //   }
-  //   try {
-  //     const res = await fetch('http://127.0.0.1:8000/user', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json', // Add this line
-  //       },
-  //       body: JSON.stringify(newUser),
-  //     })
-  //     if (!res.ok) throw new Error('Failed to fetch')
-  //     console.log(await res.json())
-  //   } catch (err) {
-  //     console.error(err)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+      setAlbums(data as Album[])
+    } catch (error) {
+      console.error('Unexpected error fetching albums:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  // const handleGetUser = async () => {
-  //   setIsLoading(true)
-  //   try {
-  //     const res = await fetch('http://127.0.0.1:8000/users/92ff0041-eef8-4afd-a913-413076111af9', {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     })
-  //     if (!res.ok) throw new Error('Failed to fetch')
-  //     console.log(await res.json())
-  //   } catch (err) {
-  //     console.error(err)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
+  useEffect(() => {
+    fetchAlbums()
+  }, [])
+
+  if (loading) {
+    return (
+      <PageWrapper className='gap-8'>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Skeleton key={index} className='w-[550px] h-[543px]' />
+        ))}
+      </PageWrapper>
+    )
+  }
+
+  if (albums.length === 0) {
+    return (
+      <PageWrapper className='gap-8'>
+        <p>No albums found.</p>
+      </PageWrapper>
+    )
+  }
 
   return (
     <PageWrapper className='gap-8'>
-      <Post />
-      <Post />
-      <Post />
-      <Post />
-      <Post />
+      {albums.map(album => (
+        <Post key={album.id} albumData={album} />
+      ))}
     </PageWrapper>
   )
 }

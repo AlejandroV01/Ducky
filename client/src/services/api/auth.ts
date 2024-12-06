@@ -2,7 +2,7 @@ import { SignInData, SignUpData, VerificationData } from '@/types/auth'
 import { fetchApi } from './base'
 
 export const authApi = {
-  signUp: (data: SignUpData) => 
+  signUp: (data: SignUpData) =>
     fetchApi('/auth/signup', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -17,7 +17,7 @@ export const authApi = {
   resendCode: (email: string) =>
     fetchApi('/verification/resend', {
       method: 'POST',
-      body: JSON.stringify({email}),
+      body: JSON.stringify({ email }),
     }),
 
   signIn: (data: SignInData) =>
@@ -38,7 +38,7 @@ export const authApi = {
 
   googleCallback: (code: string) =>
     fetchApi('/auth/google/callback', {
-        method: 'POST',
-        body: JSON.stringify({code}),
+      method: 'POST',
+      body: JSON.stringify({ code }),
     }),
 }

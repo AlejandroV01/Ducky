@@ -58,46 +58,18 @@ ex. request
 '''
 @router.post("/signup")
 def signup(data: SignUpRequest):
+    print("entering signup with this data", data) 
     try:
-        # check if email exists in pending users
-        if pending_user_db.get_by_field("email", data.email).data:
-            return generate_response(
-                error="Email pending verification. Please check your email or wait to request a new code.",
-                status=400
-            )
-        
-        # check if email exists in active users
+        # Check if email already exists in active users
         if user_db.get_by_field("email", data.email).data:
             return generate_response(error="Email already registered", status=400)
         
-        # check username in pending users
-        if pending_user_db.get_by_field("user_name", data.user_name).data:
-            return generate_response(error="Username already taken", status=400)
-        
-        # check username in active users
+        # Check if username is already taken
         if user_db.get_by_field("user_name", data.user_name).data:
             return generate_response(error="Username already taken", status=400)
-
-        # generate verification code
-        code = str(uuid.uuid4())[:6].upper()
         
-        # create verification attempt (10 minute expiry)
-        verification = VerificationAttempt(
-            id=uuid.uuid4(),
-            email=data.email,
-            code=code,
-            attempts=0,
-            expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
-            created_at=datetime.now(timezone.utc)
-        )
-        
-        # store new verification attempt
-        verification_result = verification_db.save(verification)
-        if not verification_result.data:
-            return generate_response(error="Failed to create verification", status=500)
-                
-        # create pending user
-        pending_user = PendingUser(
+        # Create active user
+        new_user = User(
             id=uuid.uuid4(),
             email=data.email,
             password=data.password,
@@ -108,28 +80,19 @@ def signup(data: SignUpRequest):
             created_at=datetime.now(timezone.utc)
         )
         
-        # store pending user
-        pending_result = pending_user_db.save(pending_user)
+        # Store new user in active users database
+        result = user_db.save(new_user)
+        if not result.data:
+            return generate_response(error="Failed to create user", status=500)
 
-        if not pending_result.data:
-            # clean up verification if pending user fails
-            verification_db.delete(verification.id)
-            return generate_response(error="Failed to create pending user", status=500)
-        
-        # send verification email using Resend
-        if not send_verification_email(data.email, code):
-            # clean up everything if email fails
-            verification_db.delete(verification.id)
-            pending_user_db.delete(pending_user.id)
-            return generate_response(error="Failed to send verification email", status=500)
-
-        # return success response
+        # Return success response
         return generate_response(
-            data={"message": "Verification code sent"},
+            data={"message": "Signup successful"},
             status=200
         )
     except Exception as e:
         return generate_response(error=str(e), status=500)
+
 
 
 '''
@@ -141,25 +104,35 @@ ex. request
 '''
 @router.post("/signin")
 def signin(request: SignInRequest, response: Response):
+    print(f"Received Payload: {request.dict()}")
     try:
+        # Fetch the user by email
         user = user_db.get_by_field("email", request.email)
         if not user.data:
             return generate_response(error="Invalid credentials", status=401)
 
         user_data = user.data[0]
+        print("1")
+        # Debugging: Log password fields
+        print(f"Request Password: {request.password} (Type: {type(request.password)})")
+        print(f"User Password: {user_data['password']} (Type: {type(user_data['password'])})")
 
-        # check if account is locked due to failed attempts
+        # Ensure both passwords are strings
+        if not isinstance(request.password, str) or not isinstance(user_data["password"], str):
+            return generate_response(error="Invalid credentials", status=401)
+        print("2")
+        # Check if the account is locked
         if user_data.get('login_attempts', 0) >= 5:
             last_attempt = datetime.fromisoformat(user_data.get('last_failed_login', ''))
             lockout_duration = datetime.now(timezone.utc) - last_attempt
-            
+            print("3")
             if lockout_duration.total_seconds() < 600:  # 10 minutes
                 return generate_response(
                     error="Account is locked. Please try again later.",
                     status=401
                 )
             else:
-                # reset attempts after lockout period
+                # Reset attempts after lockout period
                 update_data = {
                     **user_data,
                     'login_attempts': 0,
@@ -167,41 +140,45 @@ def signin(request: SignInRequest, response: Response):
                 }
                 user_update = UserUpdateModel(**update_data)
                 user_db.update(user_data["id"], user_update)
-        
-
-        is_password_correct = verify_password(request.password, user_data["password"])
-
-        # verify password and create session with 3 week expiry
-        if is_password_correct:
-
+        print("4")
+        # Verify the password directly
+        if request.password == user_data["password"]:
             user_update_data = {
                 **user_data,
                 'login_attempts': 0,
                 'last_failed_login': None,
                 'last_login': datetime.now(timezone.utc)
             }
-
-            # reset attempts and update last login
+            print("5")
+            # Reset login attempts and update last login
             user_update = UserUpdateModel(**user_update_data)
-
+            print("5.1")
             updated_user = user_db.update(user_data["id"], user_update).data[0]
+            print("5.2")
             updated_user.pop('password', None)
-
-            # generate tokens
+            print("5.3")
+            # Generate tokens
             tokens = generate_tokens(str(user_data["id"]))
-
-            # set refresh token as HTTP-only cookie
+            print("5.4")
+            print("6")
+            # Set refresh token as HTTP-only cookie
             response.set_cookie(
                 key="refresh_token",
                 value=tokens["refresh_token"],
                 httponly=True,
-                secure=True,  # for HTTPS
+                secure=True,  # For HTTPS
                 samesite="None",
                 max_age=1814400  # 3 weeks in seconds
-            )                
-
+            )
+            print("7")
             # Return user data and session info
+            print("Response Data Sent:", {
+    "message": "Signed in successfully",
+    "access_token": tokens["access_token"],
+    "user": updated_user
+})
             return generate_response(
+                
                 data={
                     "message": "Signed in successfully",
                     "access_token": tokens["access_token"],
@@ -209,19 +186,26 @@ def signin(request: SignInRequest, response: Response):
                 },
                 status=200
             )
-        
         else:
+            # Increment login attempts on incorrect password
+            print("8")
             current_attempts = user_data.get('login_attempts', 0) + 1
             user_update_data = {
                 **user_data,
                 'login_attempts': current_attempts,
                 'last_failed_login': datetime.now(timezone.utc)
             }
+            print("9")
             user_update = UserUpdateModel(**user_update_data)
             user_db.update(user_data["id"], user_update)
+            print("10")
             return generate_response(error="Invalid credentials", status=401)
     except Exception as e:
+        print("11")
+        print(f"Signin error: {str(e)}")
         return generate_response(error=str(e), status=500)
+
+
 
 
 '''

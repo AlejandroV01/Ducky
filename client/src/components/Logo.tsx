@@ -8,7 +8,7 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ size }) => {
   return (
     <div className={size ? '' : 'w-full'}>
-      <Image src='/images/logo.svg' alt='Logo' width={size || 100} height={size || 100} />
+      <Image src='/images/LOGOduck.svg' alt='Logo' width={size || 100} height={size || 100} />
     </div>
   )
 }

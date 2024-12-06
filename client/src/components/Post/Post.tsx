@@ -1,15 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
-import { useAppSelector } from '@/store/hooks'
-import { RootState } from '@/store/store'
+import { supabase } from '@/lib/supabaseClient'
+import { Album, User } from '@/types/db'
 import { CheckCircle, LoaderCircle } from 'lucide-react'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import UserAvatar from '../UserAvatar'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-export const Post = () => {
-  const user = useAppSelector((state: RootState) => state.auth)
-  const date = new Date('2024-10-13 05:05:44.904557+00').toLocaleDateString('en-US', {
+import { Skeleton } from '../ui/skeleton'
+export const Post = ({ albumData }: { albumData: Album }) => {
+  const [user, setUser] = useState<User>()
+  const userId = albumData.owner_id
+  const [loading, setLoading] = useState(true)
+  const date = new Date(albumData.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -24,21 +27,47 @@ export const Post = () => {
       setIsRequestedToJoinLoading(false)
     }, 2000)
   }
+  //use the user table to get the user_name of the id
+  const getUserBasedOnId = async () => {
+    const { data, error } = await supabase.from('user').select('*').eq('id', userId)
+    if (error) {
+      console.error('Error getting user name from id', error)
+      return
+    }
+    setUser(data[0] as User)
+  }
+  useEffect(() => {
+    getUserBasedOnId()
+  }, [])
+  useEffect(() => {
+    console.log('current loading of Post:', loading)
+  }, [loading])
+
+  const handleToggleLoading = (isLoading: boolean) => {
+    setLoading(isLoading)
+  }
+  const userName = user?.user_name
+  console.log('Post', albumData.title, 'by', userName, 'icon_url', user?.icon_url)
+  console.info('USER for Post', albumData.title, 'IS', user)
   return (
-    <Card className='max-w-[550px] p-4 dark:bg-foreground/5 rounded-lg shadow-md flex flex-col'>
-      <Link className='flex items-center gap-2 mb-2 hover:underline w-fit' href={`/profile/${user.user_name}`}>
-        <UserAvatar size={30} />
-        <span className='font-semibold'>{user.user_name}</span>
+    <Card className='max-w-[550px] p-4 dark:bg-foreground/5 rounded-lg shadow-md flex flex-col min-w-[550px]'>
+      <Link className='flex items-center gap-2 mb-2 hover:underline w-fit' href={`/profile/${userName}`}>
+        <UserAvatar size={30} username={userName} icon_url={user?.icon_url ?? undefined} />
+        <span className='font-semibold'>{userName}</span>
       </Link>
       <div>
-        <span className='block text-xl font-semibold mb-2'>Album Title Here</span>
-        <PostPreview />
+        <Link className='block text-xl font-semibold mb-2 hover:underline' href={`/album/${userName}/${albumData.title}`}>
+          {albumData.title}
+        </Link>
+        {loading && <Skeleton className='w-[516px] h-[361px]' />}
+        {userName && <PostPreview albumOwner={userName} albumTitle={albumData.title} handleToggleLoading={handleToggleLoading} />}
+
         <div className='flex flex-wrap items-start gap-2 mt-4'>
           <p className='flex-1 min-w-0 break-all'>
-            <Link className='font-semibold hover:underline' href={`/profile/${user.user_name}`}>
-              {user.user_name}:
+            <Link className='font-semibold hover:underline' href={`/profile/${userName}`}>
+              {userName}:
             </Link>{' '}
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil error enim nemo, in praesentium temporibus.
+            {albumData.description}
           </p>
         </div>
       </div>
@@ -58,17 +87,57 @@ export const Post = () => {
   )
 }
 
-const PostPreview = () => {
-  const images: string[] = [
-    'https://nlgbrupftredhrjormbc.supabase.co/storage/v1/object/sign/photos/Users/lebron_james/Bronny_Pics/anders-jilden-uwbajDCODj4-unsplash.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJwaG90b3MvVXNlcnMvbGVicm9uX2phbWVzL0Jyb25ueV9QaWNzL2FuZGVycy1qaWxkZW4tdXdiYWpEQ09EajQtdW5zcGxhc2guanBnIiwiaWF0IjoxNzMwODM3NjQyLCJleHAiOjE3NjIzNzM2NDJ9.QVXi2AU5a6vUhqEWx48oKuagAbIon86_E18mpc_gKRg&t=2024-11-05T20%3A14%3A03.359Z',
-    'https://nlgbrupftredhrjormbc.supabase.co/storage/v1/object/sign/photos/Users/lebron_james/Bronny_Pics/daniel-leone-g30P1zcOzXo-unsplash.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJwaG90b3MvVXNlcnMvbGVicm9uX2phbWVzL0Jyb25ueV9QaWNzL2RhbmllbC1sZW9uZS1nMzBQMXpjT3pYby11bnNwbGFzaC5qcGciLCJpYXQiOjE3MzA4Mzc2ODMsImV4cCI6MTc2MjM3MzY4M30.2503lXxt2fTdcNudFXbl8sPHEGExhSccCd0Fj_A99JM&t=2024-11-05T20%3A14%3A44.189Z',
-    'https://nlgbrupftredhrjormbc.supabase.co/storage/v1/object/sign/photos/Users/lebron_james/Bronny_Pics/hendrik-cornelissen--qrcOR33ErA-unsplash.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJwaG90b3MvVXNlcnMvbGVicm9uX2phbWVzL0Jyb25ueV9QaWNzL2hlbmRyaWstY29ybmVsaXNzZW4tLXFyY09SMzNFckEtdW5zcGxhc2guanBnIiwiaWF0IjoxNzMwODM3Njk0LCJleHAiOjE3NjIzNzM2OTR9.xCNU6Iyzglax38M-DXXd3_QSGwYvmA5s8WI3v17n1Jo&t=2024-11-05T20%3A14%3A55.086Z',
-  ]
-  const albumTitle = 'Album Title Here'
-  const albumOwner = 'lebron_james'
+const PostPreview = ({
+  albumTitle,
+  albumOwner,
+  handleToggleLoading,
+}: {
+  albumTitle: string
+  albumOwner: string
+  handleToggleLoading: (loading: boolean) => void
+}) => {
+  const [albumImages, setAlbumImages] = useState<string[]>([])
+
+  const getAlbumImages = async () => {
+    try {
+      console.log('Fetching album images... from album:', albumTitle, 'by user:', albumOwner)
+      console.log(`Users/${albumOwner}/${albumTitle}/`)
+      const albumFolderPath = `Users/${albumOwner}/${albumTitle}/`
+
+      const { data: files, error } = await supabase.storage.from('photos').list(albumFolderPath, {
+        limit: 3,
+      })
+
+      if (error) {
+        console.error('Error fetching album images:', error)
+        return
+      }
+
+      if (!files || files.length === 0) {
+        console.log('No images found in album.')
+        setAlbumImages([])
+        return
+      }
+
+      const publicURLs = files.map(file => supabase.storage.from('photos').getPublicUrl(`${albumFolderPath}${file.name}`).data.publicUrl)
+
+      setAlbumImages(publicURLs)
+      console.log('Album images retrieved:', publicURLs)
+    } catch (error) {
+      console.error('Error retrieving album images:', error)
+    } finally {
+      handleToggleLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    handleToggleLoading(true)
+    getAlbumImages()
+  }, [albumOwner])
+
   return (
-    <div className='grid gap-1 grid-cols-2 grid-rows-2'>
-      {images.map((url, index) => (
+    <div className='grid gap-1 grid-cols-2 grid-rows-2 border rounded-lg max-h-[365px]'>
+      {albumImages.map((url, index) => (
         <div key={index} className={`relative ${index === 0 ? 'row-span-2' : ''} w-full h-full`}>
           <img
             src={url}
